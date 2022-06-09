@@ -9,5 +9,6 @@ namespace DBDIconRepo.Model
     public class MessageToken
     {
         public static string FILTEROPTIONSCHANGETOKEN = "FILTEROPTIONCHANGED";
+        public static string SETTINGVALUECHANGETOKEN = "SETTINGVALUECHANGED";
     }
 }

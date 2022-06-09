@@ -17,4 +17,16 @@ namespace DBDIconRepo.Model
             Changed = value;
         }
     }
+
+    public class SettingChangedMessage
+    {
+        public string? PropertyName { get; private set; }
+        public object? Value { get; private set; }
+
+        public SettingChangedMessage(string? property, object? value)
+        {
+            PropertyName = property;
+            Value = value;
+        }
+    }
 }

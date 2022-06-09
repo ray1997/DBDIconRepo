@@ -25,7 +25,8 @@ namespace DBDIconRepo.ViewModel
             InitializeCommands();
 
             //Monitor settings
-            Config.PropertyChanging += UpdateWhenChanged;
+            Messenger.Default.Register<HomeViewModel, SettingChangedMessage, string>(this,
+                MessageToken.SETTINGVALUECHANGETOKEN, HandleSettingValueChanged);
 
             InitializeGit();
 
@@ -38,7 +39,18 @@ namespace DBDIconRepo.ViewModel
                 //Monitor settings
                 Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterOptionChanged);
             });
+
+            Task.Delay(2500).Await(() =>
+            {
+                Setting.EnableMessageGateOnSettingChanged();
+            });
         }
+
+        private void HandleSettingValueChanged(HomeViewModel recipient, SettingChangedMessage message)
+        {
+            Setting.SaveSettings(Config);
+        }
+
         private void HandleFilterOptionChanged(HomeViewModel recipient, FilterOptionChangedMessage message)
         {
             OnPropertyChanged(nameof(FilteredList));
@@ -52,11 +64,6 @@ namespace DBDIconRepo.ViewModel
         private void ApplyFilter()
         {
             OnPropertyChanged(nameof(FilteredList));
-        }
-
-        private void UpdateWhenChanged(object? sender, System.ComponentModel.PropertyChangingEventArgs e)
-        {
-            Setting.SaveSettings(Config);
         }
 
         ObservableCollection<PackDisplay>? _packs;
@@ -73,50 +80,99 @@ namespace DBDIconRepo.ViewModel
             set => SetProperty(ref _isEmpty, value);
         }
 
+        private Debouncer _queryDebouncer { get; } = new Debouncer();
+        string _query;
+        public string SearchQuery
+        {
+            get => _query;
+            set
+            {
+                if (SetProperty(ref _query, value))
+                {
+                    _queryDebouncer.Debounce(value.Length == 0 ? 100 : 500, () =>
+                    {
+                        OnPropertyChanged(nameof(FilteredList));
+                    });
+                }
+            }
+        }
+
         public ObservableCollection<PackDisplay> FilteredList
         {
             get
             {
                 if (AllAvailablePack is null)
                     return new ObservableCollection<PackDisplay>();
+                var afterQuerySearch = new List<PackDisplay>(AllAvailablePack);
+                if (!string.IsNullOrEmpty(SearchQuery))
+                {
+                    afterQuerySearch = AllAvailablePack.Where(pack => 
+                    pack.Info.Name.ToLower().Contains(SearchQuery.ToLower()) || 
+                    pack.Info.Author.ToLower().Contains(SearchQuery.ToLower())).ToList();
+                }
                 var newList = new List<PackDisplay>();
 
                 //Filter by perks
-                var perks = AllAvailablePack.Where(x => x.Info.ContentInfo.HasPerks);
+                var perks = afterQuerySearch.Where(x => x.Info.ContentInfo.HasPerks);
                 if (Config.FilterOptions.HasPerks)
                     newList = newList.Union(perks).ToList();
 
                 //Filter by add-ons
-                var addons = AllAvailablePack.Where(x => x.Info.ContentInfo.HasAddons);
+                var addons = afterQuerySearch.Where(x => x.Info.ContentInfo.HasAddons);
                 if (Config.FilterOptions.HasAddons)
                     newList = newList.Union(addons).ToList();
 
                 //Filter by items
-                var items = AllAvailablePack.Where(x => x.Info.ContentInfo.HasItems);
+                var items = afterQuerySearch.Where(x => x.Info.ContentInfo.HasItems);
                 if (Config.FilterOptions.HasItems)
                     newList = newList.Union(items).ToList();
 
                 //Filter by offerings
-                var offerings = AllAvailablePack.Where(x => x.Info.ContentInfo.HasOfferings);
+                var offerings = afterQuerySearch.Where(x => x.Info.ContentInfo.HasOfferings);
                 if (Config.FilterOptions.HasOfferings)
                     newList = newList.Union(offerings).ToList();
 
                 //Filter by powers
-                var powers = AllAvailablePack.Where(x => x.Info.ContentInfo.HasPowers);
+                var powers = afterQuerySearch.Where(x => x.Info.ContentInfo.HasPowers);
                 if (Config.FilterOptions.HasPowers)
                     newList = newList.Union(powers).ToList();
 
                 //Filter by status
-                var status = AllAvailablePack.Where(x => x.Info.ContentInfo.HasStatus);
+                var status = afterQuerySearch.Where(x => x.Info.ContentInfo.HasStatus);
                 if (Config.FilterOptions.HasStatus)
                     newList = newList.Union(status).ToList();
 
                 //Filter by portraits
-                var portraits = AllAvailablePack.Where(x => x.Info.ContentInfo.HasPortraits);
+                var portraits = afterQuerySearch.Where(x => x.Info.ContentInfo.HasPortraits);
                 if (Config.FilterOptions.HasPortraits)
                     newList = newList.Union(portraits).ToList();
 
                 IsFilteredListEmpty = newList.Count == 0;
+                if (newList.Count > 0)
+                {
+                    //Sort before return
+                    switch (Config.SortBy)
+                    {
+                        case SortOptions.Name:
+                            if (Config.SortAscending)
+                                newList = newList.OrderBy(i => i.Info.Name).ToList();
+                            else
+                                newList = newList.OrderByDescending(i => i.Info.Name).ToList();
+                            break;
+                        case SortOptions.Author:
+                            if (Config.SortAscending)
+                                newList = newList.OrderBy(i => i.Info.Author).ToList();
+                            else
+                                newList = newList.OrderByDescending(i => i.Info.Author).ToList();
+                            break;
+                        case SortOptions.LastUpdate:
+                            if (Config.SortAscending)
+                                newList = newList.OrderBy(i => i.Info.LastUpdate).ToList();
+                            else
+                                newList = newList.OrderByDescending(i => i.Info.LastUpdate).ToList();
+                            break;
+                    }
+                }
                 return new ObservableCollection<PackDisplay>(newList);
             }
         }
@@ -174,12 +230,16 @@ namespace DBDIconRepo.ViewModel
         public ICommand SetFilterOnlyPerks { get; private set; }
         public ICommand SetFilterOnlyPortraits { get; private set; }
         public ICommand SetFilterShowAll { get; private set; }
-
+        public ICommand SetSortAscendingOption { get; private set; }
+        public ICommand SetSortOptions { get; private set; }
+        
         private void InitializeCommands()
         {
             SetFilterOnlyPerks = new RelayCommand<RoutedEventArgs>(SetFilterOnlyPerksAction);
             SetFilterOnlyPortraits = new RelayCommand<RoutedEventArgs>(SetFilterOnlyPortraitsAction);
             SetFilterShowAll = new RelayCommand<RoutedEventArgs>(SetFilterCompletePackAction);
+            SetSortAscendingOption = new RelayCommand<bool>(SetSortAscendingOptionAction);
+            SetSortOptions = new RelayCommand<string>(SetSortOptionsAction);
         }
 
         private void SetFilterOnlyPerksAction(RoutedEventArgs? obj)
@@ -214,6 +274,22 @@ namespace DBDIconRepo.ViewModel
                 Config.FilterOptions.HasPerks = true;
             OnPropertyChanged(nameof(FilteredList));
         }
+
+        private void SetSortAscendingOptionAction(bool input)
+        {
+            Config.SortAscending = input;
+            OnPropertyChanged(nameof(FilteredList));
+        }
+
+        private void SetSortOptionsAction(string? obj)
+        {
+            if (obj is null)
+                return;
+            SortOptions parse = Enum.Parse<SortOptions>(obj);
+            Config.SortBy = parse;
+            OnPropertyChanged(nameof(FilteredList));
+        }
+
         #endregion
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -15,19 +16,30 @@ namespace DBDIconRepo.Model
 {
     public class Setting : ObservableObject
     {
+        public bool Set<T>(ref T storage, T value, [CallerMemberName]string? propertyName = null)
+        {
+            if (SetProperty(ref storage, value, propertyName))
+            {
+                if (ShouldSendMessageOnChange)
+                    Messenger.Default.Send(new SettingChangedMessage(propertyName, value), MessageToken.SETTINGVALUECHANGETOKEN);
+                return true;
+            }
+            return false;
+        }
+
         string _dbdPath = "";
         public string DBDInstallationPath
         {
             get => _dbdPath;
-            set => SetProperty(ref _dbdPath, value);
+            set => Set(ref _dbdPath, value);
         }
 
         bool _useUncuratedContent = true;
-        //TODO:Eventually load content only from specific repo pointed to other packs
+        //TODO:Eventually load content only from specific repo pointed to other packs if this set to true (which is by default: true)
         public bool UseUncuratedContent
         {
             get => _useUncuratedContent;
-            set => SetProperty(ref _useUncuratedContent, value);
+            set => Set(ref _useUncuratedContent, value);
         }
 
         ObservableCollection<string> _selectedPreview = new()
@@ -40,16 +52,35 @@ namespace DBDIconRepo.Model
         public ObservableCollection<string> PerkPreviewSelection
         {
             get => _selectedPreview;
-            set => SetProperty(ref _selectedPreview, value);
+            set => Set(ref _selectedPreview, value);
         }
 
         FilterOptions _filters = FilterOptions.CompletePack;
         public FilterOptions FilterOptions
         {
             get => _filters;
-            set => SetProperty(ref _filters, value);
+            set => Set(ref _filters, value);
         }
 
+        SortOptions _sort = SortOptions.Name;
+        public SortOptions SortBy
+        {
+            get => _sort;
+            set => Set(ref _sort, value);
+        }
+
+        bool _sortAscending;
+        public bool SortAscending
+        {
+            get => _sortAscending;
+            set => Set(ref _sortAscending, value);
+        }
+
+        #region Save, Load, and Instance
+        [JsonIgnore]
+        private static bool ShouldSendMessageOnChange = false;
+
+        public static void EnableMessageGateOnSettingChanged() => ShouldSendMessageOnChange = true;
         [JsonIgnore]
         private const string SettingFilename = "settings.json";
         public static void SaveSettings(Setting instance)
@@ -76,6 +107,7 @@ namespace DBDIconRepo.Model
 
         public static Setting? LoadSettings()
         {
+
             string settingFilePath = $"{Environment.CurrentDirectory}\\{SettingFilename}";
 
             if (!File.Exists(settingFilePath))
@@ -91,6 +123,7 @@ namespace DBDIconRepo.Model
 
         [JsonIgnore]
         private static Setting? _instance;
+        [JsonIgnore]
         public static Setting? Instance
         {
             get
@@ -104,6 +137,15 @@ namespace DBDIconRepo.Model
                 return _instance;
             }
         }
+
+        #endregion
+    }
+
+    public enum SortOptions
+    {
+        Name,
+        Author,
+        LastUpdate
     }
 
     public class FilterOptions : ObservableObject

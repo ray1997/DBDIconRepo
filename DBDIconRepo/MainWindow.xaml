@@ -6,12 +6,17 @@
         xmlns:local="clr-namespace:DBDIconRepo"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:convert="clr-namespace:DBDIconRepo.Converters"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
         Title="Dead by daylight: Icon repo" Height="450" Width="800">
     <Window.Resources>
         <convert:BoolToVisibility x:Key="boolToVisibility"/>
         <convert:NullableStringPropertyDisplayConverter x:Key="propertyDisplay"/>
+        <convert:SortOptionToBool x:Key="sortOptionToBool"/>
+        <convert:InvertBool x:Key="invertBool"/>
+        <system:Boolean x:Key="BTrue">True</system:Boolean>
+        <system:Boolean x:Key="BFalse">False</system:Boolean>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -21,7 +26,7 @@
 
         <ui:CommandBar Grid.Row="0" DefaultLabelPosition="Right">
             <ui:CommandBar.Content>
-                <ui:AutoSuggestBox Margin="5" VerticalAlignment="Center"
+                <ui:AutoSuggestBox Text="{Binding SearchQuery, Mode=TwoWay}" Margin="5" VerticalAlignment="Center"
                                        PlaceholderText="Enter keyword to search.."
                                        Width="350"/>
             </ui:CommandBar.Content>
@@ -29,11 +34,31 @@
             <ui:AppBarButton Label="Sort" Icon="Sort" Click="OpenAttatchedFlyout">
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:MenuFlyout x:Name="flyoutSortSelection">
-                        <MenuItem Header="Name" IsCheckable="True"/>
-                        <MenuItem Header="Download" IsCheckable="True"/>
-                        <MenuItem Header="Date" IsCheckable="True"/>
-                        <MenuItem Header="Author" IsCheckable="True"/>
-                        <MenuItem Header="Last update" IsCheckable="True"/>
+                        <MenuItem Header="Name" IsCheckable="True"
+                                  Command="{Binding SetSortOptions}"
+                                  CommandParameter="Name"
+                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Name'}"/>
+                        <MenuItem Header="Author" IsCheckable="True"
+                                  Command="{Binding SetSortOptions}"
+                                  CommandParameter="Author"
+                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Author'}"/>
+                        <MenuItem Header="Last update" IsCheckable="True"
+                                  Command="{Binding SetSortOptions}"
+                                  CommandParameter="LastUpdate"
+                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='LastUpdate'}"/>
+                        
+                        <Separator/>
+                        
+                        <MenuItem Header="Ascending" 
+                                  IsCheckable="True"
+                                  Command="{Binding SetSortAscendingOption}"
+                                  CommandParameter="{StaticResource BTrue}"
+                                  IsChecked="{Binding Config.SortAscending, Mode=OneWay}"/>
+                        <MenuItem Header="Descending"  
+                                  IsCheckable="True"
+                                  Command="{Binding SetSortAscendingOption}"
+                                  CommandParameter="{StaticResource BFalse}"
+                                  IsChecked="{Binding Config.SortAscending, Mode=OneWay, Converter={StaticResource invertBool}}"/>
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
             </ui:AppBarButton>
@@ -73,7 +98,7 @@
                                     <ui:SplitButton.Flyout>
                                         <ui:MenuFlyout>
                                             <MenuItem Header="Steam"/>
-                                            <MenuItem Header="Xbox Game pass PC"/>
+                                            <MenuItem Header="Xbox game pass PC"/>
                                             <MenuItem Header="Epic Games"/>
                                         </ui:MenuFlyout>
                                     </ui:SplitButton.Flyout>
