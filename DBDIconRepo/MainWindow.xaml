@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DBDIconRepo"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:convert="clr-namespace:DBDIconRepo.Converters"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
         Title="Dead by daylight: Icon repo" Height="450" Width="800">
     <Window.Resources>
-        
+        <convert:BoolToVisibility x:Key="boolToVisibility"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -57,7 +58,7 @@
 
             <ui:AppBarButton Icon="Setting" Label="Setting" Click="OpenAttatchedFlyout">
                 <ui:FlyoutBase.AttachedFlyout>
-                    <ui:Flyout Placement="BottomEdgeAlignedRight">
+                    <ui:Flyout>
                         <StackPanel Orientation="Vertical">
                             <TextBlock FontSize="24" FontWeight="Bold" Text="Settings" Margin="0,5"/>
 
@@ -79,12 +80,92 @@
                             </StackPanel>
 
                             <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"/>
+
                         </StackPanel>
                     </ui:Flyout>
                 </ui:FlyoutBase.AttachedFlyout>
             </ui:AppBarButton>
         </ui:CommandBar>
-        
-        
+
+        <ui:GridView Grid.Row="1" ItemsSource="{Binding AllAvailablePack, Mode=OneWay}"
+                     Padding="12">
+            <ui:GridView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical" Margin="5">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel.Resources>
+                                <Style TargetType="Image">
+                                    <Setter Property="Width" Value="72"/>
+                                    <Setter Property="Height" Value="72"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <!-- Perk previews -->
+                            <Image Source="{Binding FirstPerkSource, Mode=OneWay}"/>
+                            <Image Source="{Binding SecondPerkSource, Mode=OneWay}"/>
+                            <Image Source="{Binding ThirdPerkSource, Mode=OneWay}"/>
+                            <Image Source="{Binding ForthPerkSource, Mode=OneWay}"/>
+                        </StackPanel>
+                        <TextBlock HorizontalAlignment="Center" Text="{Binding Info.Name}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock HorizontalAlignment="Left">
+                            Author: <Hyperlink ><Run Text="{Binding Info.Author}"/></Hyperlink>
+                        </TextBlock>
+                        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                            <StackPanel.Resources>
+                                <Style TargetType="ui:FontIcon">
+                                    <Setter Property="Margin" Value="4,0"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text="Content: "/>
+                            <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets" Margin="0,0,4,0"
+                                         ToolTip="This icon pack contain perks icon"
+                                         Visibility="{Binding Info.ContentInfo.HasPerks, Converter={StaticResource boolToVisibility}}"/>
+                            <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                         ToolTip="This icon pack contain portraits icon"
+                                         Visibility="{Binding Info.ContentInfo.HasPortraits, Converter={StaticResource boolToVisibility}}"/>
+                            <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                         ToolTip="This icon pack contain killer powers icon"
+                                         Visibility="{Binding Info.ContentInfo.HasPowers, Converter={StaticResource boolToVisibility}}"/>
+                            <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                         ToolTip="This icon pack contain survivor items icon"
+                                         Visibility="{Binding Info.ContentInfo.HasItems, Converter={StaticResource boolToVisibility}}"/>
+                            <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                         ToolTip="This icon pack contain power/item addons icon"
+                                         Visibility="{Binding Info.ContentInfo.HasAddons, Converter={StaticResource boolToVisibility}}"/>
+                            <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                         ToolTip="This icon pack contain status effects icon"
+                                         Visibility="{Binding Info.ContentInfo.HasStatus, Converter={StaticResource boolToVisibility}}"/>
+                            <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                         ToolTip="This icon pack contain offerings icon"
+                                         Visibility="{Binding Info.ContentInfo.HasOfferings, Converter={StaticResource boolToVisibility}}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </ui:GridView.ItemTemplate>
+        </ui:GridView>
+        <!--<ListView Grid.Row="1" ItemsSource="{Binding AllAvailablePack, Mode=OneWay}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel.Resources>
+                                <Style TargetType="Image">
+                                    <Setter Property="Width" Value="128"/>
+                                    <Setter Property="Height" Value="128"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            --><!-- Perk previews --><!--
+                            <Image Source="{Binding FirstPerkSource, Mode=OneWay}"/>
+                            <Image Source="{Binding SecondPerkSource, Mode=OneWay}"/>
+                            <Image Source="{Binding ThirdPerkSource, Mode=OneWay}"/>
+                            <Image Source="{Binding ForthPerkSource, Mode=OneWay}"/>
+                        </StackPanel>
+                        <TextBlock HorizontalAlignment="Center" Text="{Binding Name}"/>
+                        <TextBlock HorizontalAlignment="Left">
+                            Author: <Run Text="{Binding Author}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>-->
     </Grid>
 </Window>

@@ -16,6 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Images\profile-placeholder.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\profile-placeholder.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="7.1.2" />
     <PackageReference Include="ModernWpfUI" Version="0.9.5" />
     <PackageReference Include="Octokit" Version="0.51.0" />

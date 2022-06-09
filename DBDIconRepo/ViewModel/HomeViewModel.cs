@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
+using IconPack.Model;
 using Octokit;
 using System;
 using System.Collections.Generic;
@@ -13,16 +15,26 @@ namespace DBDIconRepo.ViewModel
 {
     public class HomeViewModel : ObservableObject
     {
-        ObservableCollection<Pack> _packs;
-        public ObservableCollection<Pack> AllAvailablePack
+        public async Task InitializeViewModel()
+        {
+            InitializeGit();
+
+            if (AllAvailablePack is null)
+                AllAvailablePack = new ObservableCollection<PackDisplay>();
+            await FindPack();
+        }
+
+        ObservableCollection<PackDisplay>? _packs;
+        public ObservableCollection<PackDisplay> AllAvailablePack
         {
             get => _packs;
             set => SetProperty(ref _packs, value);
         }
 
+        public Setting? Config => Setting.Instance;
 
         #region GIT
-        public Octokit.GitHubClient client;
+        public Octokit.GitHubClient? client;
         private string token = "";
 
         public void InitializeGit()
@@ -46,19 +58,23 @@ namespace DBDIconRepo.ViewModel
         private const string PackTag = "dbd-icon-pack";
         public async Task FindPack()
         {
+            //TODO:Somewhere before this, search if all result already cached
             var request = new SearchRepositoriesRequest($"topic:{PackTag}");
             var result = await client.Search.SearchRepo(request);
             foreach (var repo in result.Items)
             {
-                var repoToPack = new Pack()
+                PackDisplay? gatheredPack = new PackDisplay()
                 {
-                    Name = repo.Name,
-                    Description = repo.Description,
-                    Author = repo.Owner.Name,
-                    URL = repo.Url,
-                    LastUpdate = repo.UpdatedAt.DateTime
+                    Info = await CacheOrGit.GetPack(client, repo),
+                    Owner = repo.Owner.Login,
+                    Repository = repo.Name
                 };
-                AllAvailablePack.Add(repoToPack);
+
+                if (gatheredPack is null)
+                    continue;
+                //Preview icons
+                await CacheOrGit.GatherPackPreviewImage(client, repo, gatheredPack.Info, Config.PerkPreviewSelection.ToArray());
+                AllAvailablePack.Add(gatheredPack);
             }
         }
 

@@ -34,8 +34,7 @@ namespace DBDIconRepo
 
         private async void LoadPacklist(object sender, RoutedEventArgs e)
         {
-            ViewModel.InitializeGit();
-            await ViewModel.FindPack();
+            await ViewModel.InitializeViewModel();
         }
 
         private void OpenAttatchedFlyout(object sender, RoutedEventArgs e)
