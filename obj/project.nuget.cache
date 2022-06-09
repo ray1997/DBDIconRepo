@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "jX6LPwy7w5B57zF5kQghhqyWneR61bIirAJwjNme8N/uG/cWIL3678B/5P7m39fUZvwFuZq5U7vWp5pbyxcqgA==",
+  "success": true,
+  "projectFilePath": "D:\\Projects\\ray1997-repos\\DBDIconRepo\\ProjectBanByDaylight\\DBDIconRepo.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rayle\\.nuget\\packages\\communitytoolkit.mvvm\\7.1.2\\communitytoolkit.mvvm.7.1.2.nupkg.sha512",
+    "C:\\Users\\rayle\\.nuget\\packages\\modernwpfui\\0.9.5\\modernwpfui.0.9.5.nupkg.sha512",
+    "C:\\Users\\rayle\\.nuget\\packages\\octokit\\0.51.0\\octokit.0.51.0.nupkg.sha512"
+  ],
+  "logs": []
+}

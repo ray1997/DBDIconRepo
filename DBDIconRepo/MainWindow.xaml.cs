@@ -1,4 +1,5 @@
-﻿using ModernWpf.Controls.Primitives;
+﻿using DBDIconRepo.ViewModel;
+using ModernWpf.Controls.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,20 @@ namespace DBDIconRepo
     /// </summary>
     public partial class MainWindow : Window
     {
+        public HomeViewModel ViewModel { get; } = new HomeViewModel();
+
         public MainWindow()
         {
             InitializeComponent();
+            this.Loaded += LoadPacklist;
+            DataContext = ViewModel;
+
+        }
+
+        private async void LoadPacklist(object sender, RoutedEventArgs e)
+        {
+            ViewModel.InitializeGit();
+            await ViewModel.FindPack();
         }
 
         private void OpenAttatchedFlyout(object sender, RoutedEventArgs e)

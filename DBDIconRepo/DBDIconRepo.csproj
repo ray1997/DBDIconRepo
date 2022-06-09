@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="SortAllIconsIntoFolder\**" />
+    <EmbeddedResource Remove="SortAllIconsIntoFolder\**" />
+    <None Remove="SortAllIconsIntoFolder\**" />
+    <Page Remove="SortAllIconsIntoFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="7.1.2" />
+    <PackageReference Include="ModernWpfUI" Version="0.9.5" />
+    <PackageReference Include="Octokit" Version="0.51.0" />
+  </ItemGroup>
+
+</Project>
