@@ -57,6 +57,35 @@ Pack newInfo = new()
     }
 };
 
+fillinfo:
+Console.WriteLine("Do you want to fill the rest of the info? (Description, URL, or Author name) [Y/N]");
+string? answer = Console.ReadLine();
+if (answer == "Y")
+{
+    Console.WriteLine("What info do you want to fill?");
+    Console.WriteLine("1. Description");
+    Console.WriteLine("2. Author name");
+    Console.WriteLine("3. URL");
+
+    int.TryParse(Console.ReadLine(), out int index);
+    switch (index)
+    {
+        case 1:
+            Console.WriteLine("Enter a short description:");
+            newInfo.Description = Console.ReadLine();
+            break;
+        case 2:
+            Console.WriteLine("Enter custom author name");
+            newInfo.Author = Console.ReadLine();
+            break;
+        case 3:
+            Console.WriteLine("Enter git URL of the pack project (eg. https://github.com/Icon-Pack-Provider/Dead-by-daylight-Default-icons");
+            newInfo.URL = Console.ReadLine();
+            break;
+    }
+    goto fillinfo;
+}
+
 string output = System.Text.Json.JsonSerializer.Serialize(newInfo, new JsonSerializerOptions()
 {
     WriteIndented = true,
