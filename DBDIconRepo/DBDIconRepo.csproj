@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Pack\IconPack.csproj" />
+    <ProjectReference Include="..\PackCore\IconPack.csproj" />
   </ItemGroup>
 
 </Project>
