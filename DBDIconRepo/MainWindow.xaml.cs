@@ -28,19 +28,24 @@ namespace DBDIconRepo
         {
             InitializeComponent();
             this.Loaded += LoadPacklist;
+            this.Unloaded += UnregisterStuff;
             DataContext = ViewModel;
 
         }
 
-        private async void LoadPacklist(object sender, RoutedEventArgs e)
+        private void UnregisterStuff(object sender, RoutedEventArgs e)
         {
-            await ViewModel.InitializeViewModel();
+            ViewModel.UnregisterMessages();
+        }
+
+        private void LoadPacklist(object sender, RoutedEventArgs e)
+        {
+            ViewModel.InitializeViewModel();
         }
 
         private void OpenAttatchedFlyout(object sender, RoutedEventArgs e)
         {
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Model
 {
@@ -39,6 +41,13 @@ namespace DBDIconRepo.Model
         {
             get => _selectedPreview;
             set => SetProperty(ref _selectedPreview, value);
+        }
+
+        FilterOptions _filters = FilterOptions.CompletePack;
+        public FilterOptions FilterOptions
+        {
+            get => _filters;
+            set => SetProperty(ref _filters, value);
         }
 
         [JsonIgnore]
@@ -93,6 +102,117 @@ namespace DBDIconRepo.Model
                         _instance = new Setting();
                 }
                 return _instance;
+            }
+        }
+    }
+
+    public class FilterOptions : ObservableObject
+    {
+        public static FilterOptions CompletePack
+        {
+            get
+            {
+                return new FilterOptions()
+                {
+                    HasPerks = true,
+                    HasAddons = true,
+                    HasItems = true,
+                    HasOfferings = true,
+                    HasPortraits = true,
+                    HasPowers = true,
+                    HasStatus = true
+                };
+            }
+        }
+
+        bool _perks;
+        public bool HasPerks
+        {
+            get => _perks;
+            set
+            {
+                if (SetProperty(ref _perks, value))
+                {
+                    Messenger.Default.Send(new FilterOptionChangedMessage(nameof(HasPerks), this), MessageToken.FILTEROPTIONSCHANGETOKEN);
+                }
+            }
+        }
+
+        bool _portraits;
+        public bool HasPortraits
+        {
+            get => _portraits;
+            set
+            {
+                if (SetProperty(ref _portraits, value))
+                {
+                    Messenger.Default.Send(new FilterOptionChangedMessage(nameof(HasPortraits), this), MessageToken.FILTEROPTIONSCHANGETOKEN);
+                }
+            }
+        }
+
+        bool _powers;
+        public bool HasPowers
+        {
+            get => _powers;
+            set
+            {
+                if (SetProperty(ref _powers, value))
+                {
+                    Messenger.Default.Send(new FilterOptionChangedMessage(nameof(HasPowers), this), MessageToken.FILTEROPTIONSCHANGETOKEN);
+                }
+            }
+        }
+
+        bool _item;
+        public bool HasItems
+        {
+            get => _item;
+            set
+            {
+                if (SetProperty(ref _item, value))
+                {
+                    Messenger.Default.Send(new FilterOptionChangedMessage(nameof(HasItems), this), MessageToken.FILTEROPTIONSCHANGETOKEN);
+                }
+            }
+        }
+
+        bool _status;
+        public bool HasStatus
+        {
+            get => _status;
+            set
+            {
+                if (SetProperty(ref _status, value))
+                {
+                    Messenger.Default.Send(new FilterOptionChangedMessage(nameof(HasStatus), this), MessageToken.FILTEROPTIONSCHANGETOKEN);
+                }
+            }
+        }
+
+        bool _offerings;
+        public bool HasOfferings
+        {
+            get => _offerings;
+            set
+            {
+                if (SetProperty(ref _offerings, value))
+                {
+                    Messenger.Default.Send(new FilterOptionChangedMessage(nameof(HasOfferings), this), MessageToken.FILTEROPTIONSCHANGETOKEN);
+                }
+            }
+        }
+
+        bool _addons;
+        public bool HasAddons
+        {
+            get => _addons;
+            set
+            {
+                if (SetProperty(ref _addons, value))
+                {
+                    Messenger.Default.Send(new FilterOptionChangedMessage(nameof(HasAddons), this), MessageToken.FILTEROPTIONSCHANGETOKEN);
+                }
             }
         }
     }
