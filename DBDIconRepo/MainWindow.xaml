@@ -84,20 +84,21 @@
 
             <ui:AppBarButton Icon="Setting" Label="Setting" Click="OpenAttatchedFlyout">
                 <ui:FlyoutBase.AttachedFlyout>
-                    <ui:Flyout>
+                    <ui:Flyout Placement="BottomEdgeAlignedRight">
                         <StackPanel Orientation="Vertical">
                             <TextBlock FontSize="24" FontWeight="Bold" Text="Settings" Margin="0,5"/>
 
                             <ui:AutoSuggestBox PlaceholderText="C:\SteamLibrary\common\Dead by Daylight\"
+                                               Text="{Binding Config.DBDInstallationPath, Mode=TwoWay}"
                                                Header="Dead by Daylight installation path" Margin="0,2"
-                                                   Width="350"/>
+                                               Width="400"/>
 
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="Browse..."/>
+                            <StackPanel Orientation="Horizontal" Margin="0,4">
+                                <Button Content="Browse..." Command="{Binding BrowseForSteamInstallationPath}"/>
                                 <ui:SplitButton Content="Detect" Margin="2,0">
                                     <ui:SplitButton.Flyout>
                                         <ui:MenuFlyout>
-                                            <MenuItem Header="Steam"/>
+                                            <MenuItem Header="Steam" Command="{Binding FindDBDSteam}"/>
                                             <MenuItem Header="Xbox game pass PC"/>
                                             <MenuItem Header="Epic Games"/>
                                         </ui:MenuFlyout>

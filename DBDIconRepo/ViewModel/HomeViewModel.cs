@@ -232,14 +232,25 @@ namespace DBDIconRepo.ViewModel
         public ICommand SetFilterShowAll { get; private set; }
         public ICommand SetSortAscendingOption { get; private set; }
         public ICommand SetSortOptions { get; private set; }
+        public ICommand BrowseForSteamInstallationPath { get; private set; }
+        public ICommand FindDBDSteam { get; private set; }
+        public ICommand FindDBDXbox { get; private set; }
+        public ICommand FindDBDEpic { get; private set; }
         
         private void InitializeCommands()
         {
+            //Filter
             SetFilterOnlyPerks = new RelayCommand<RoutedEventArgs>(SetFilterOnlyPerksAction);
             SetFilterOnlyPortraits = new RelayCommand<RoutedEventArgs>(SetFilterOnlyPortraitsAction);
             SetFilterShowAll = new RelayCommand<RoutedEventArgs>(SetFilterCompletePackAction);
+            //Sort
             SetSortAscendingOption = new RelayCommand<bool>(SetSortAscendingOptionAction);
             SetSortOptions = new RelayCommand<string>(SetSortOptionsAction);
+            //Setting
+            BrowseForSteamInstallationPath = new RelayCommand<RoutedEventArgs>(BrowseForSteamInstallationPathAction);
+            FindDBDSteam = new RelayCommand<RoutedEventArgs>(FindDBDSteamAction);
+            FindDBDXbox = new RelayCommand<RoutedEventArgs>(FindDBDXboxAction);
+            FindDBDEpic = new RelayCommand<RoutedEventArgs>(FindDBDEpicAction);
         }
 
         private void SetFilterOnlyPerksAction(RoutedEventArgs? obj)
@@ -288,6 +299,51 @@ namespace DBDIconRepo.ViewModel
             SortOptions parse = Enum.Parse<SortOptions>(obj);
             Config.SortBy = parse;
             OnPropertyChanged(nameof(FilteredList));
+        }
+
+#pragma warning disable CA1416 // Validate platform compatibility
+        private void BrowseForSteamInstallationPathAction(RoutedEventArgs? obj)
+        {
+            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog()
+            {
+                RootFolder = Environment.SpecialFolder.CommonDocuments,
+                ShowNewFolderButton = false,
+                UseDescriptionForTitle = true,
+                Description = "Locate Dead by Daylight installation folder"
+            };
+            var result = dialog.ShowDialog();
+            if (result == true)
+            {
+                //Validate path
+                Config.DBDInstallationPath = dialog.SelectedPath;
+            }
+        }
+
+        private void FindDBDSteamAction(RoutedEventArgs? obj)
+        {
+            //Locate steam installation folder
+            string? steamPath = Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Valve\Steam", "InstallPath", "").ToString();
+            string libraryFolderFile = $"{steamPath}\\steamapps\\libraryfolders.vdf";
+            if (File.Exists(libraryFolderFile))
+            {
+                string content = File.ReadAllText(libraryFolderFile);
+                string dbdPath = SteamLibraryFolderHandler.GetDeadByDaylightPath(content);
+                if (!string.IsNullOrEmpty(dbdPath))
+                {
+                    Config.DBDInstallationPath = dbdPath;
+                }
+            }
+        }
+#pragma warning restore CA1416 // Validate platform compatibility
+
+        private void FindDBDXboxAction(RoutedEventArgs? obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void FindDBDEpicAction(RoutedEventArgs? obj)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
