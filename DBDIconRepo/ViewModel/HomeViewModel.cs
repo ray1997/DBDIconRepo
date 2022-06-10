@@ -236,6 +236,9 @@ namespace DBDIconRepo.ViewModel
         public ICommand FindDBDSteam { get; private set; }
         public ICommand FindDBDXbox { get; private set; }
         public ICommand FindDBDEpic { get; private set; }
+
+        public ICommand ResetSettings { get; private set; }
+        public ICommand UninstallIconPack { get; private set; }
         
         private void InitializeCommands()
         {
@@ -251,6 +254,9 @@ namespace DBDIconRepo.ViewModel
             FindDBDSteam = new RelayCommand<RoutedEventArgs>(FindDBDSteamAction);
             FindDBDXbox = new RelayCommand<RoutedEventArgs>(FindDBDXboxAction);
             FindDBDEpic = new RelayCommand<RoutedEventArgs>(FindDBDEpicAction);
+            //
+            ResetSettings = new RelayCommand<RoutedEventArgs>(ResetSettingsAction);
+            UninstallIconPack = new RelayCommand<RoutedEventArgs>(UninstallIconPackAction);
         }
 
         private void SetFilterOnlyPerksAction(RoutedEventArgs? obj)
@@ -345,6 +351,21 @@ namespace DBDIconRepo.ViewModel
         {
             throw new NotImplementedException();
         }
+
+
+        private void ResetSettingsAction(RoutedEventArgs? obj)
+        {
+            Setting.DeleteSettings();
+            App.Current.Shutdown();
+        }
+
+        private void UninstallIconPackAction(RoutedEventArgs? obj)
+        {
+            if (string.IsNullOrEmpty(Config.DBDInstallationPath))
+                return;
+            IconUninstaller.Uninstall(Config.DBDInstallationPath);
+        }
+
 
         #endregion
     }

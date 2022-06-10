@@ -121,6 +121,15 @@ namespace DBDIconRepo.Model
             }
         }
 
+        public static void DeleteSettings()
+        {
+            string settingFilePath = $"{Environment.CurrentDirectory}\\{SettingFilename}";
+            if (File.Exists(settingFilePath))
+            {
+                File.Delete(settingFilePath);
+            }
+        }
+
         [JsonIgnore]
         private static Setting? _instance;
         [JsonIgnore]

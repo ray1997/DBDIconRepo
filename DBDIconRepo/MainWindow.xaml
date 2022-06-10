@@ -108,6 +108,11 @@
 
                             <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"/>
 
+                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                <Button Content="Reset settings" Command="{Binding ResetSettings}"/>
+                                <Button Content="Uninstall icon pack" Margin="5,0" Command="{Binding UninstallIconPack}"/>
+                            </StackPanel>
+
                         </StackPanel>
                     </ui:Flyout>
                 </ui:FlyoutBase.AttachedFlyout>
