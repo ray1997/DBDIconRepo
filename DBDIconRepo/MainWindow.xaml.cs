@@ -48,4 +48,17 @@ namespace DBDIconRepo
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
     }
+
+    public class IconPreviewTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate IconDisplay { get; set; }
+        public DataTemplate BannerDisplay { get; set; }
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            if (item is Model.IconDisplay)
+                return IconDisplay;
+            else
+                return BannerDisplay;
+        }
+    }
 }

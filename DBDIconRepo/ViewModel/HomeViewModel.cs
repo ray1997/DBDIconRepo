@@ -28,6 +28,12 @@ namespace DBDIconRepo.ViewModel
             Messenger.Default.Register<HomeViewModel, SettingChangedMessage, string>(this,
                 MessageToken.SETTINGVALUECHANGETOKEN, HandleSettingValueChanged);
 
+            //Register messages
+            Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
+                MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
+            Messenger.Default.Register<HomeViewModel, RequestDownloadRepo, string>(this,
+                MessageToken.REQUESTDOWNLOADREPOTOKEN, HandleRequestedDownloadRepo);
+
             InitializeGit();
 
             if (AllAvailablePack is null)
@@ -40,15 +46,28 @@ namespace DBDIconRepo.ViewModel
                 Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterOptionChanged);
             });
 
-            Task.Delay(2500).Await(() =>
+            Task.Delay(5000).Await(() =>
             {
                 Setting.EnableMessageGateOnSettingChanged();
             });
         }
 
+        private async void HandleRequestedDownloadRepo(HomeViewModel recipient, RequestDownloadRepo message)
+        {
+            var repo = await client.Repository.Get(message.Info.Repository.ID);
+            await CacheOrGit.DownloadPack(client, repo, message.Info);
+        }
+
+        private void HandleRequestedSearchQuery(HomeViewModel recipient, RequestSearchQueryMessage message)
+        {
+            if (message.Query is null)
+                return;
+            SearchQuery = message.Query;
+        }
+
         private void HandleSettingValueChanged(HomeViewModel recipient, SettingChangedMessage message)
         {
-            Setting.SaveSettings(Config);
+            Config.SaveSettings();
         }
 
         private void HandleFilterOptionChanged(HomeViewModel recipient, FilterOptionChangedMessage message)
@@ -180,7 +199,7 @@ namespace DBDIconRepo.ViewModel
         public Setting? Config => Setting.Instance;
 
         #region GIT
-        public Octokit.GitHubClient? client;
+        private GitHubClient? client;
         private string token = "";
 
         public void InitializeGit()
@@ -209,17 +228,14 @@ namespace DBDIconRepo.ViewModel
             var result = await client.Search.SearchRepo(request);
             foreach (var repo in result.Items)
             {
-                PackDisplay? gatheredPack = new PackDisplay()
-                {
-                    Info = await CacheOrGit.GetPack(client, repo),
-                    Owner = repo.Owner.Login,
-                    Repository = repo.Name
-                };
-
+                var packInfo = await CacheOrGit.GetPack(client, repo);
+                PackDisplay? gatheredPack = new(packInfo);
+                
                 if (gatheredPack is null)
                     continue;
                 //Preview icons
-                await CacheOrGit.GatherPackPreviewImage(client, repo, gatheredPack.Info, Config.PerkPreviewSelection.ToArray());
+                await CacheOrGit.GatherPackDisplayData(client, repo, gatheredPack.Info, Config.PerkPreviewSelection.ToArray());
+                gatheredPack.HandleURLs();
                 AllAvailablePack.Add(gatheredPack);
             }
         }
@@ -227,19 +243,21 @@ namespace DBDIconRepo.ViewModel
         #endregion
 
         #region Commands
-        public ICommand SetFilterOnlyPerks { get; private set; }
-        public ICommand SetFilterOnlyPortraits { get; private set; }
-        public ICommand SetFilterShowAll { get; private set; }
-        public ICommand SetSortAscendingOption { get; private set; }
-        public ICommand SetSortOptions { get; private set; }
-        public ICommand BrowseForSteamInstallationPath { get; private set; }
-        public ICommand FindDBDSteam { get; private set; }
-        public ICommand FindDBDXbox { get; private set; }
-        public ICommand FindDBDEpic { get; private set; }
+        public ICommand? SetFilterOnlyPerks { get; private set; }
+        public ICommand? SetFilterOnlyPortraits { get; private set; }
+        public ICommand? SetFilterShowAll { get; private set; }
+        public ICommand? SetSortAscendingOption { get; private set; }
+        public ICommand? SetSortOptions { get; private set; }
+        public ICommand? BrowseForSteamInstallationPath { get; private set; }
+        public ICommand? FindDBDSteam { get; private set; }
+        public ICommand? FindDBDXbox { get; private set; }
+        public ICommand? FindDBDEpic { get; private set; }
 
-        public ICommand ResetSettings { get; private set; }
-        public ICommand UninstallIconPack { get; private set; }
-        
+        public ICommand? ResetSettings { get; private set; }
+        public ICommand? UninstallIconPack { get; private set; }
+        public ICommand? InstallThisPack { get; private set; }
+
+
         private void InitializeCommands()
         {
             //Filter
@@ -355,7 +373,7 @@ namespace DBDIconRepo.ViewModel
 
         private void ResetSettingsAction(RoutedEventArgs? obj)
         {
-            Setting.DeleteSettings();
+            SettingManager.DeleteSettings();
             App.Current.Shutdown();
         }
 
@@ -366,7 +384,7 @@ namespace DBDIconRepo.ViewModel
             IconUninstaller.Uninstall(Config.DBDInstallationPath);
         }
 
-
         #endregion
+
     }
 }

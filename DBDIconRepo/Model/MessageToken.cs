@@ -8,7 +8,9 @@ namespace DBDIconRepo.Model
 {
     public class MessageToken
     {
-        public static string FILTEROPTIONSCHANGETOKEN = "FILTEROPTIONCHANGED";
-        public static string SETTINGVALUECHANGETOKEN = "SETTINGVALUECHANGED";
+        public const string FILTEROPTIONSCHANGETOKEN = "FILTEROPTIONCHANGED";
+        public const string SETTINGVALUECHANGETOKEN = "SETTINGVALUECHANGED";
+        public const string REQUESTSEARCHQUERYTOKEN = "REQUESTEDSEARCHQUERY";
+        public const string REQUESTDOWNLOADREPOTOKEN = "REQUESTEDDOWNLOADREPO";
     }
 }

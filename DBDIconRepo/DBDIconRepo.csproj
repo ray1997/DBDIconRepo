@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="7.1.2" />
+    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="ModernWpfUI" Version="0.9.5" />
     <PackageReference Include="Octokit" Version="0.51.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
@@ -32,6 +33,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PackCore\IconPack.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dialog\" />
   </ItemGroup>
 
 </Project>

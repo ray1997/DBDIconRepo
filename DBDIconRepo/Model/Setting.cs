@@ -76,14 +76,37 @@ namespace DBDIconRepo.Model
             set => Set(ref _sortAscending, value);
         }
 
-        #region Save, Load, and Instance
+        #region Messenger manager
         [JsonIgnore]
         private static bool ShouldSendMessageOnChange = false;
 
         public static void EnableMessageGateOnSettingChanged() => ShouldSendMessageOnChange = true;
+        public static void DisableMessageGateOnSettingChanged() => ShouldSendMessageOnChange = false;
+
+        [JsonIgnore]
+        private static Setting? _instance;
+        [JsonIgnore]
+        public static Setting? Instance
+        {
+            get
+            {
+                if (_instance is null)
+                {
+                    _instance = SettingManager.LoadSettings();
+                    if (_instance is null)
+                        _instance = new Setting();
+                }
+                return _instance;
+            }
+        }
+        #endregion
+    }
+
+    public static class SettingManager
+    {
         [JsonIgnore]
         private const string SettingFilename = "settings.json";
-        public static void SaveSettings(Setting instance)
+        public static void SaveSettings(this Setting instance)
         {
             //Replace existing
             string settingFilePath = $"{Environment.CurrentDirectory}\\{SettingFilename}";
@@ -117,7 +140,10 @@ namespace DBDIconRepo.Model
 
             using (StreamReader reader = File.OpenText(settingFilePath))
             {
-                return JsonSerializer.Deserialize<Setting>(reader.ReadToEnd());
+                Setting.DisableMessageGateOnSettingChanged();
+                var setting = JsonSerializer.Deserialize<Setting>(reader.ReadToEnd());
+                Setting.EnableMessageGateOnSettingChanged();
+                return setting;
             }
         }
 
@@ -129,25 +155,6 @@ namespace DBDIconRepo.Model
                 File.Delete(settingFilePath);
             }
         }
-
-        [JsonIgnore]
-        private static Setting? _instance;
-        [JsonIgnore]
-        public static Setting? Instance
-        {
-            get
-            {
-                if (_instance is null)
-                {                    
-                    _instance = LoadSettings();
-                    if (_instance is null)
-                        _instance = new Setting();
-                }
-                return _instance;
-            }
-        }
-
-        #endregion
     }
 
     public enum SortOptions

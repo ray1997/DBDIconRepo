@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using IconPack.Helper;
+using Octokit;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
@@ -7,8 +8,8 @@ namespace IconPack.Model
 {
     public class Pack : ObservableObject
     {
-        string _name;
-        public string Name
+        string? _name;
+        public string? Name
         {
             get => _name;
             set => SetProperty(ref _name, value);
@@ -24,13 +25,7 @@ namespace IconPack.Model
         string? _author;
         public string? Author
         {
-            get
-            {
-                if (_author is null)
-                    return "";
-                return _author;
-            }
-
+            get => _author;
             set => SetProperty(ref _author, value);
         }
 
@@ -49,16 +44,93 @@ namespace IconPack.Model
             set => SetProperty(ref _lastUpdate, value);
         }
 
-        PackContentInfo _content;
-        public PackContentInfo ContentInfo
+        PackRepositoryInfo? _repInfo;
+        public PackRepositoryInfo? Repository
+        {
+            get => _repInfo;
+            set => SetProperty(ref _repInfo, value);
+        }
+
+        PackContentInfo? _content;
+        public PackContentInfo? ContentInfo
         {
             get => _content;
             set => SetProperty(ref _content, value);
         }
     }
 
+    public class PackRepositoryInfo : ObservableObject
+    {
+        public PackRepositoryInfo() { }
+        public PackRepositoryInfo(Repository repo)
+        {
+            ID = repo.Id;
+            Name = repo.Name;
+            Owner = repo.Owner.Login;
+            DefaultBranch = repo.DefaultBranch;
+            CloneUrl = repo.CloneUrl;
+        }
+
+        string? _repoName;
+        public string? Name
+        {
+            get => _repoName;
+            set => SetProperty(ref _repoName, value);
+        }
+
+        long _id;
+        public long ID
+        {
+            get => _id;
+            set => SetProperty(ref _id, value);
+        }
+
+        string? _ownerLogin;
+        public string? Owner
+        {
+            get => _ownerLogin;
+            set => SetProperty(ref _ownerLogin, value);
+        }
+
+        string? _defaultBranch;
+        public string? DefaultBranch
+        {
+            get => _defaultBranch;
+            set => SetProperty(ref _defaultBranch, value);
+        }
+
+        string? _cloneUrl;
+        public string? CloneUrl
+        {
+            get => _cloneUrl;
+            set => SetProperty(ref _cloneUrl, value);
+        }
+    }
+
     public class PackContentInfo : ObservableObject
     {
+        public PackContentInfo() { }
+
+        public static async Task<PackContentInfo> GetContentInfo(GitHubClient client, Repository repo)
+        {
+            PackContentInfo info = new PackContentInfo();
+            var commits = await client.Repository.Commit.GetAll(repo.Owner.Login, repo.Name);
+            var head = commits.First();
+            var treeContent = await client.Git.Tree.GetRecursive(repo.Id, head.Sha);
+            var treeOnly = treeContent.Tree.Where(i => i.Type.Value == TreeType.Tree);
+
+            info.HasAddons = treeOnly.Any(content => content.Path == "ItemAddons");
+            info.HasItems = treeOnly.Any(content => content.Path =="items");
+            info.HasOfferings = treeOnly.Any(content => content.Path =="Favors");
+            info.HasPerks = treeOnly.Any(content => content.Path =="Perks");
+            info.HasPortraits = treeOnly.Any(content => content.Path =="CharPortraits");
+            info.HasPowers = treeOnly.Any(content => content.Path =="Powers");
+            info.HasStatus = treeOnly.Any(content => content.Path =="StatusEffects");
+
+            info.Files = new ObservableCollection<string>(treeContent.Tree.Where(i => i.Type.Value == TreeType.Blob).Where(i => i.Path.EndsWith(".png")).Select(i => i.Path));
+            return info;
+        }
+
         bool _perks;
         public bool HasPerks
         {
@@ -109,7 +181,7 @@ namespace IconPack.Model
         }
 
         ObservableCollection<string>? _files;
-        public ObservableCollection<string> Files
+        public ObservableCollection<string>? Files
         {
             get => _files;
             set => SetProperty(ref _files, value);

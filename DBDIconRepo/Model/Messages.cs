@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IconPack.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,5 +29,30 @@ namespace DBDIconRepo.Model
             PropertyName = property;
             Value = value;
         }
+    }
+
+    public class RequestSearchQueryMessage
+    {
+        public string? Query { get; private set; }
+
+        public RequestSearchQueryMessage(string? _required)
+        {
+            Query = _required;
+        }
+    }
+
+    public class RequestDownloadRepo
+    {
+        public Pack Info { get; private set; }
+
+        public RequestDownloadRepo(Pack _pack)
+        {
+            Info = _pack;
+        }
+    }
+
+    public class CloningInProgressMessage
+    {
+
     }
 }
