@@ -51,8 +51,26 @@ namespace DBDIconRepo.Model
         }
     }
 
-    public class CloningInProgressMessage
-    {
 
+    public class DownloadRepoProgressReportMessage
+    {
+        public DownloadState CurrentState { get; private set; }
+        public double EstimateProgress { get; private set; }
+
+        public DownloadRepoProgressReportMessage(DownloadState currentState, double estimateProgress)
+        {
+            CurrentState = currentState;
+            EstimateProgress = estimateProgress;
+        }
+
+    }
+
+    public enum DownloadState
+    {
+        Enumerating,
+        Compressing,
+        Transfering,
+        CheckingOut,
+        Done
     }
 }

@@ -55,7 +55,7 @@ namespace DBDIconRepo.ViewModel
         private async void HandleRequestedDownloadRepo(HomeViewModel recipient, RequestDownloadRepo message)
         {
             var repo = await client.Repository.Get(message.Info.Repository.ID);
-            await CacheOrGit.DownloadPack(client, repo, message.Info);
+            CacheOrGit.DownloadPack(client, repo, message.Info).Await();
         }
 
         private void HandleRequestedSearchQuery(HomeViewModel recipient, RequestSearchQueryMessage message)

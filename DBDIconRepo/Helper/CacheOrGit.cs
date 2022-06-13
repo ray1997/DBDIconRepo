@@ -146,33 +146,142 @@ namespace DBDIconRepo.Helper
             return path;
         }
 
-        //TODO:Add support for pack banner
-        //    //TODO:Deal with a pack that didn't have these perks
-        //    //TODO:Deal with pack override perk display
-        //    //TODO:Deal with pack with less than 4 perks
-        //    //TODO:Deal with other pack type (Portrait, etc)
 
+        //TODO:Deal with other pack type (Portrait, etc)
+        private static Throttler _throttler = new(250);
         public static async Task DownloadPack(GitHubClient client, Repository repo, Pack pack)
         {
             string repoCachedFolder = $"{Environment.CurrentDirectory}\\{CachedFolderName}\\{repo.Owner.Login}\\{repo.Name}";
+
+            var user = await client.User.Current();
+            var token = client.Credentials.GetToken();
 
             if (!Directory.Exists(repoCachedFolder))
             {
                 Directory.CreateDirectory(repoCachedFolder);
             }
-
-            var user = await client.User.Current();
-            var token = client.Credentials.GetToken(); 
-            
-            //pull from remote
-            LibGit2Sharp.Repository.Clone(pack.Repository.CloneUrl, repoCachedFolder, new LibGit2Sharp.CloneOptions()
+            else
             {
-                CredentialsProvider = (_url, _user, _cred) => GetCredential(user.Login, token),
-                OnCheckoutProgress = CheckoutProgressHandlerMethod,
-                OnProgress = ProgressHandlerMethod,
-                OnTransferProgress = ProgressTransferProgressHandlerMethod,
-                IsBare = false
+                DirectoryInfo dir = new(repoCachedFolder);
+                long size = dir.GetFiles("*", SearchOption.AllDirectories)
+                    .Select(file => file.Length).Sum();
+                if (size >= repo.Size)
+                {
+                    //Already downloaded
+                    //Check for change if it's older than 1 day
+                    //otherwise, just say it's already downloaded 
+                    //these icon pack definitely not update more than once in just one day right???
+                    if ((DateTime.UtcNow + TimeSpan.FromDays(1)) >= dir.LastWriteTimeUtc)
+                    {
+                        //Say it's done downloading
+                        Messenger.Default.Send(new DownloadRepoProgressReportMessage(DownloadState.Done, 1d),
+                            $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN + repo.Name}");
+                        return;
+                    }
+                    Task.Run(() =>
+                    {
+                        //Fetch change from remote
+                        using (var libGitRepo = new LibGit2Sharp.Repository(repoCachedFolder))
+                        {
+                            //Reset everything
+                            var originMaster = libGitRepo.Branches[$"origin/{repo.DefaultBranch}"];
+                            libGitRepo.Reset(LibGit2Sharp.ResetMode.Hard, originMaster.Tip);
+                        }
+                    }).Await(() =>
+                    {
+                        //Report if it's done fetching
+                        Messenger.Default.Send(new DownloadRepoProgressReportMessage(DownloadState.Done, 1d),
+                            $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN + repo.Name}");
+                    });
+                    return;
+                }
+                else
+                {
+                    dir.Delete();
+                    Directory.CreateDirectory(repoCachedFolder);
+                }
+            }
+
+            //pull from remote
+            try
+            {
+                Task.Run(() =>
+                {
+                    LibGit2Sharp.Repository.Clone(pack.Repository.CloneUrl, repoCachedFolder, new LibGit2Sharp.CloneOptions()
+                    {
+                        CredentialsProvider = (_url, _user, _cred) => GetCredential(user.Login, token),
+                        OnProgress = (progress) => ReportServerProgress(repo.Name, progress),
+                        OnTransferProgress = (transfer) => ReportTransferProgress(repo.Name, transfer),
+                        OnCheckoutProgress = (path, complete, total) => ReportCheckoutProgress(repo.Name, path, complete, total),
+                        IsBare = false
+                    });
+                }).Await();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Clone error!: {(ex is null ? "Unknown" : ex.Message)}");
+            }
+        }
+
+        private static bool ReportServerProgress(string repositoryName, string progress)
+        {
+            //Counting objects:   0% (1/274)
+            string[] progresses = progress.Split("()/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            double estimateProgress = 0;
+            if (progresses.Length >= 3)
+            {
+                double cProg = -1;
+                double total = -1;
+                double.TryParse(progresses[1], out cProg);
+                double.TryParse(progresses[2], out total);
+                if (cProg >= 1 && total >= 1)
+                    estimateProgress = cProg / total;
+            }
+
+            if (progress.StartsWith("Counting"))
+            {
+                _throttler.Throttle(() =>
+                {
+                    Messenger.Default.Send(new DownloadRepoProgressReportMessage(DownloadState.Enumerating, estimateProgress),
+                        $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{repositoryName}");
+                });
+            }
+            else if (progress.StartsWith("Compressing"))
+            {
+                _throttler.Throttle(() =>
+                {
+                    Messenger.Default.Send(new DownloadRepoProgressReportMessage(DownloadState.Compressing, estimateProgress),
+                        $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{repositoryName}");
+                });
+            }
+
+            System.Diagnostics.Debug.WriteLine($"{estimateProgress} ({progress})");
+            return true;
+        }
+
+        private static bool ReportTransferProgress(string repositoryName, LibGit2Sharp.TransferProgress transfer)
+        {
+            if (transfer.ReceivedObjects < 1)
+                return true;
+            double estimate = Convert.ToDouble(transfer.ReceivedObjects.ToString()) / Convert.ToDouble(transfer.TotalObjects.ToString());
+            _throttler.Throttle(() =>
+            {
+                Messenger.Default.Send(new DownloadRepoProgressReportMessage(DownloadState.Transfering, estimate),
+                    $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{repositoryName}");
             });
+            System.Diagnostics.Debug.WriteLine($"{estimate}% ({transfer.ReceivedObjects}/{transfer.TotalObjects}");
+            return true;
+        }
+
+        private static void ReportCheckoutProgress(string repositoryName, string checkingOutFile, int completedFileCount, int totalFileCount) 
+        {
+            double estimate = Convert.ToDouble(completedFileCount.ToString()) / Convert.ToDouble(totalFileCount.ToString());
+            _throttler.Throttle(() =>
+            {
+                Messenger.Default.Send(new DownloadRepoProgressReportMessage(DownloadState.CheckingOut, estimate),
+                    $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN + repositoryName}");
+            });
+            System.Diagnostics.Debug.WriteLine($"{estimate}% ({completedFileCount}/{totalFileCount})");
         }
 
         private static LibGit2Sharp.UsernamePasswordCredentials GetCredential(string username, string token)
@@ -183,28 +292,5 @@ namespace DBDIconRepo.Helper
                 Password = token
             };
         }
-
-        private static bool ProgressTransferProgressHandlerMethod(LibGit2Sharp.TransferProgress progress)
-        {
-            System.Diagnostics.Debug.Print($"{nameof(ProgressTransferProgressHandlerMethod)}: \r\n" +
-                $"{nameof(progress.IndexedObjects)}: {progress.IndexedObjects}\r\n" +
-                $"{nameof(progress.TotalObjects)}: {progress.TotalObjects}\r\n" +
-                $"{nameof(progress.ReceivedObjects)}: {progress.ReceivedObjects}\r\n" +
-                $"{nameof(progress.ReceivedBytes)}: {progress.ReceivedBytes}");
-            return true;
-        }
-
-        private static bool ProgressHandlerMethod(string serverProgressOutput)
-        {
-            System.Diagnostics.Debug.Print($"{nameof(ProgressHandlerMethod)}: {serverProgressOutput}");
-            return true;
-        }
-
-        private static void CheckoutProgressHandlerMethod(string path, int completedSteps, int totalSteps)
-        {
-            System.Diagnostics.Debug.Print($"{nameof(CheckoutProgressHandlerMethod)}: {path} ({completedSteps}/{totalSteps})");
-        }
-
-
     }
 }

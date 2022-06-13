@@ -54,12 +54,65 @@ namespace DBDIconRepo.Model
 
         private void InstallThisPackAction(RoutedEventArgs? obj)
         {
+            IsDownloading = true;
+            Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
+                $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
+                HandleDownloadProgress);
+
             Messenger.Default.Send(new RequestDownloadRepo(Info), MessageToken.REQUESTDOWNLOADREPOTOKEN);
         }
 
         private void SearchForThisAuthorAction(RoutedEventArgs? obj)
         {
             Messenger.Default.Send(new RequestSearchQueryMessage(Info.Author), MessageToken.REQUESTSEARCHQUERYTOKEN);
+        }
+
+        bool _downloading;
+        public bool IsDownloading
+        {
+            get => _downloading;
+            set => SetProperty(ref _downloading, value);
+        }
+
+        double _totalProgress;
+        public double TotalDownloadProgress
+        {
+            get => _totalProgress;
+            set => SetProperty(ref _totalProgress, value);
+        }
+
+        private void HandleDownloadProgress(PackDisplay recipient, DownloadRepoProgressReportMessage message)
+        {
+            //Update progress
+            /*Progress detail: Enumerating => 0-5%,
+             * Compressing => 5-20%,
+             * Transfering => 20-90%,
+             * CheckingOut => 90-100%,
+             * Done => 100%*/
+            switch (message.CurrentState)
+            {
+                case DownloadState.Enumerating:
+                    TotalDownloadProgress = Math.Round(message.EstimateProgress * 5d);
+                    break;
+                case DownloadState.Compressing:
+                    TotalDownloadProgress = 5d + Math.Round(message.EstimateProgress * 15d);
+                    break;
+                case DownloadState.Transfering:
+                    TotalDownloadProgress = 20d + Math.Round(message.EstimateProgress * 70d);
+                    break;
+                case DownloadState.CheckingOut:
+                    TotalDownloadProgress = 90d + Math.Round(message.EstimateProgress * 10d);
+                    break;
+            }
+
+            //Check if it's done
+            if ((TotalDownloadProgress >= 99 && message.CurrentState <= DownloadState.CheckingOut) 
+                || message.CurrentState == DownloadState.Done)
+            {
+                Messenger.Default.Unregister<DownloadRepoProgressReportMessage, string>(recipient, $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}");
+                TotalDownloadProgress = 100;
+                IsDownloading = false;
+            }
         }
 
         private void OpenGitOfThisPackAction(RoutedEventArgs? obj)
@@ -116,6 +169,7 @@ namespace DBDIconRepo.Model
                 }
             }
         }
+
     }
 
     public interface IDisplayItem
