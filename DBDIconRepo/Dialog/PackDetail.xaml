@@ -1,0 +1,187 @@
+﻿<Window x:Class="DBDIconRepo.Dialog.PackDetail"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:convert="clr-namespace:DBDIconRepo.Converters"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        xmlns:local="clr-namespace:DBDIconRepo.Dialog"
+        xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
+        Title="{Binding SelectedPack.Name}"
+        mc:Ignorable="d" Height="480" Width="640">
+    <Window.Resources>
+        <convert:BoolToVisibility x:Key="boolToVisibility"/>
+        <convert:URLtoAbsoluteURI x:Key="urlToImageSource"/>
+        <convert:RevealIfNull x:Key="revealIfNull"/>
+        <convert:RevealIfNotNull x:Key="revealIfNotNull"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:PackDetailViewModel x:Name="ViewModel"/>
+    </Window.DataContext>
+    <ui:NavigationView IsPaneToggleButtonVisible="False"
+                       IsBackButtonVisible="Collapsed"
+                       PaneDisplayMode="Top"
+                       IsSettingsVisible="False"
+                       IsBackEnabled="False">
+        <ui:NavigationView.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!-- Banner, if it's exist -->
+                <Image Grid.ColumnSpan="2" Visibility="{Binding HasBanner, Converter={StaticResource boolToVisibility}}"
+                       Source="{Binding BannerURL, Converter={StaticResource urlToImageSource}}"/>
+                <!-- Hero perk display assign by creator, 
+                     or first selected perk from user -->
+                <Image Source="{Binding HeroIconURL, Converter={StaticResource urlToImageSource}}"
+                       MaxWidth="72" MaxHeight="72" Margin="10"
+                       Visibility="{Binding HeroIconURL, Converter={StaticResource revealIfNotNull}}">
+                    <Image.Effect>
+                        <DropShadowEffect Color="Black" Direction="-50" 
+                                          ShadowDepth="4" BlurRadius="4" 
+                                          Opacity="0.25"/>
+                    </Image.Effect>
+                </Image>
+                <!-- Show this if it can't find any perk to match user wanted preview perk
+                or creator didn't assign primary preview icon-->
+                <ui:PersonPicture DisplayName="{Binding SelectedPack.Name}"
+                                  MaxWidth="72" MaxHeight="72" Margin="10"
+                                  Visibility="{Binding HeroIconURL, Converter={StaticResource revealIfNull}}"/>
+
+                <StackPanel Orientation="Vertical" Margin="10,4" Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding SelectedPack.Name}" FontSize="18"
+                               FontWeight="Black"/>
+                    <TextBlock Text="{Binding SelectedPack.Description}" FontSize="14"/>
+                    <TextBlock FontSize="14"> <!-- Open Git profile? -->
+                        Made by <Hyperlink ><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
+                    </TextBlock>
+                    <StackPanel Margin="0,5" Orientation="Horizontal">
+                        <Button>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon Glyph="" FontSize="12"/>
+                                <TextBlock FontSize="12" Text="Install" Margin="4,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Margin="5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon Glyph="" FontSize="12"/>
+                                <TextBlock FontSize="12" Text="Find pack origin" Margin="4,0"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>                    
+                </StackPanel>
+            </Grid>
+        </ui:NavigationView.Header>
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Content="Overview">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Perks">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Character Portraits">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Offerings">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Items">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Powers">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Items/Powers Add-ons">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Status effects">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Actions">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Emblems">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Help">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Help/Loading tips">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+        </ui:NavigationView.MenuItems>
+        <ui:NavigationView.Content>
+            <ScrollViewer Margin="4">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!-- Perks sample preview -->
+                    <TextBlock Text="Perks" FontSize="18"/>
+                    <Button HorizontalAlignment="Right">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ListView HorizontalAlignment="Stretch" Grid.Row="1"
+                              Margin="0,4">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1" HorizontalAlignment="Stretch"/>
+                                <!--<WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>-->
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListViewItem>
+                            <StackPanel Orientation="Vertical">
+                                <Image Width="128" Height="128"/>
+                                <TextBlock TextAlignment="Center">
+                                    Survivor name<LineBreak/>Perk name
+                                </TextBlock>
+                            </StackPanel>
+                        </ListViewItem>
+                    </ListView>
+                </Grid>
+            </ScrollViewer>
+        </ui:NavigationView.Content>
+    </ui:NavigationView>
+</Window>

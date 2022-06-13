@@ -62,7 +62,15 @@ namespace DBDIconRepo.Model
             CurrentState = currentState;
             EstimateProgress = estimateProgress;
         }
+    }
 
+    public class RequestViewPackDetailMessage
+    {
+        public Pack? Selected { get; private set; }
+        public RequestViewPackDetailMessage(Pack? requested)
+        {
+            Selected = requested;
+        }
     }
 
     public enum DownloadState

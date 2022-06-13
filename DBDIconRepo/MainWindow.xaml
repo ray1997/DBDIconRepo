@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DBDIconRepo"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:convert="clr-namespace:DBDIconRepo.Converters"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
         Title="Dead by daylight: Icon repo" Height="720" Width="1024">
     <Window.Resources>
@@ -240,7 +240,7 @@
                                     Grid.Column="2" HorizontalAlignment="Stretch"
                                     MinWidth="32"
                                     MinHeight="32"
-                                    Command="{Binding OpenGitOfThisPack}">
+                                    Command="{Binding OpenPackDetailWindow}">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph="" 
                                                  Margin="5,0"

@@ -35,8 +35,4 @@
     <ProjectReference Include="..\PackCore\IconPack.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dialog\" />
-  </ItemGroup>
-
 </Project>

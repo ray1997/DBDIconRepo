@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DBDIconRepo.Dialog;
 using DBDIconRepo.Helper;
 using IconPack.Model;
 using System;
@@ -44,12 +45,19 @@ namespace DBDIconRepo.Model
         public ICommand? SearchForThisAuthor { get; private set; }
         public ICommand? OpenGitOfThisPack { get; private set; }
         public ICommand? InstallThisPack { get; private set; }
+        public ICommand? OpenPackDetailWindow { get; private set; }
 
         private void InitializeCommand()
         {
             SearchForThisAuthor = new RelayCommand<RoutedEventArgs>(SearchForThisAuthorAction); 
             OpenGitOfThisPack = new RelayCommand<RoutedEventArgs>(OpenGitOfThisPackAction);
             InstallThisPack = new RelayCommand<RoutedEventArgs>(InstallThisPackAction);
+            OpenPackDetailWindow = new RelayCommand<RoutedEventArgs>(OpenPackDetailWindowAction);
+        }
+
+        private void OpenPackDetailWindowAction(RoutedEventArgs? obj)
+        {
+            Messenger.Default.Send(new RequestViewPackDetailMessage(Info), MessageToken.REQUESTVIEWPACKDETAIL);
         }
 
         private void InstallThisPackAction(RoutedEventArgs? obj)
@@ -139,7 +147,7 @@ namespace DBDIconRepo.Model
                     if (Info.ContentInfo.Files.FirstOrDefault(i => i.ToLower().Contains(icon.ToLower())) is string match)
                     {
                         //This pack have this exact icon
-                        PreviewSources.Add(new IconDisplay(URL.GetIconAsGitRawContent(Info.Repository, URL.EnsurePathIsForURL(match))));
+                        PreviewSources.Add(new IconDisplay(URL.GetIconAsGitRawContent(Info.Repository, match)));
                     }
                 }
                 if (PreviewSources.Count < 1)

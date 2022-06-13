@@ -1,19 +1,13 @@
-﻿using DBDIconRepo.ViewModel;
+﻿using DBDIconRepo.Dialog;
+using DBDIconRepo.Model;
+using DBDIconRepo.ViewModel;
 using ModernWpf.Controls.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo
 {
@@ -30,7 +24,27 @@ namespace DBDIconRepo
             this.Loaded += LoadPacklist;
             this.Unloaded += UnregisterStuff;
             DataContext = ViewModel;
+            Messenger.Default.Register<MainWindow, RequestViewPackDetailMessage, string>(this,
+                MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
+        }
 
+        private void OpenPackDetailWindow(MainWindow recipient, RequestViewPackDetailMessage message)
+        {
+            foreach (var window in Application.Current.Windows)
+            {
+                if (window is PackDetail pd)
+                {
+                    if (pd.ViewModel.SelectedPack == message.Selected)
+                    {
+                        pd.Hide();
+                        pd.Show();
+                        return;
+                    }
+                }
+            }
+
+            PackDetail detail = new PackDetail(message.Selected);
+            detail.Show();
         }
 
         private void UnregisterStuff(object sender, RoutedEventArgs e)
