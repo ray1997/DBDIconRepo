@@ -155,15 +155,33 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    <!-- Readme preview -->
+                    <TextBlock Text="Readme.md" FontSize="18" Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}"/>
+                    <Button HorizontalAlignment="Right" Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Read more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ScrollViewer MaxHeight="120" Grid.Row="1"
+                                  Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
+                        <FlowDocumentReader ViewingMode="Page"  IsFindEnabled="False" 
+                                            IsPrintEnabled="False" IsTwoPageViewEnabled="False"
+                                            Document="{Binding ReadmeMDContent}"
+                                            Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}"/>
+                    </ScrollViewer>
+                    <!-- Readme scroll blocker -->
+                    <Rectangle Fill="Transparent" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+
                     <!-- Perks sample preview -->
-                    <TextBlock Text="Perks" FontSize="18"/>
-                    <Button HorizontalAlignment="Right">
+                    <TextBlock Grid.Row="2" Text="Perks" FontSize="18"/>
+                    <Button Grid.Row="2" HorizontalAlignment="Right">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show more"/>
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <ListView HorizontalAlignment="Stretch" Grid.Row="1"
+                    <ListView HorizontalAlignment="Stretch" Grid.Row="3"
                               Margin="0,4">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>

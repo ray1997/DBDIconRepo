@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -41,9 +42,37 @@ namespace DBDIconRepo.ViewModel
                 }
             }
 
-            //string path = CacheOrGit.GetDisplayContentPath(Info.Repository.Owner, Info.Repository.Name);
-            //if (File.Exists($"{path}\\.banner.png")) //Banner exist, link to it on github
-            //    PreviewSources.Add(new BannerDisplay(URL.GetGithubRawContent(Info.Repository, ".banner.png")));
+            //Readme.md
+            HasReadmeMD = File.Exists($"{path}\\readme.md");
+            if (HasReadmeMD)
+            {
+                string md = File.ReadAllText($"{path}\\readme.md");
+                MdXaml.Markdown translator = new();
+                ReadmeMDContent = translator.Transform(md);
+            }
+            /*
+            // using MdXaml;
+            // using System.Windows.Documents;
+
+            Markdown engine = new Markdown();
+
+            string markdownTxt = System.IO.File.ReadAllText("example.md");
+
+            FlowDocument document = engine.Transform(markdownTxt);*/
+        }
+
+        bool _hasReadme;
+        public bool HasReadmeMD
+        {
+            get => _hasReadme;
+            set => SetProperty(ref _hasReadme, value);
+        }
+
+        FlowDocument _readme = new();
+        public FlowDocument ReadmeMDContent
+        {
+            get => _readme;
+            set => SetProperty(ref _readme, value);
         }
 
         Pack? _selected;

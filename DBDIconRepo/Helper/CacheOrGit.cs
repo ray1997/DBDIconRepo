@@ -94,7 +94,7 @@ namespace DBDIconRepo.Helper
             //Directory
             string cachedRoot = GetDisplayContentPath(repo.Owner.Login, repo.Name);
 
-            string readmePath = $"{cachedRoot}\\readme.md";
+            string readmePath = $"{cachedRoot}\\README.md";
             string noReadmeMarker = $"{cachedRoot}\\NOREADME";
 
             //Readme.md
@@ -102,8 +102,9 @@ namespace DBDIconRepo.Helper
             {
                 //Check if this repo have readme.md
                 bool readmeState = await URL.IsContentExists(repo, "readme.md");
+                bool READMEState = await URL.IsContentExists(repo, "README.md");
                 //if so, get it
-                if (readmeState)
+                if (readmeState || READMEState)
                 {
                     //Get readme.md
                     var readme = await client.Repository.Content.GetReadme(repo.Id);

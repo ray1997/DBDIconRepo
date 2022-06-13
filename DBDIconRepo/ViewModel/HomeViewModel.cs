@@ -325,7 +325,6 @@ namespace DBDIconRepo.ViewModel
             OnPropertyChanged(nameof(FilteredList));
         }
 
-#pragma warning disable CA1416 // Validate platform compatibility
         private void BrowseForSteamInstallationPathAction(RoutedEventArgs? obj)
         {
             Ookii.Dialogs.Wpf.VistaFolderBrowserDialog dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog()
@@ -358,7 +357,6 @@ namespace DBDIconRepo.ViewModel
                 }
             }
         }
-#pragma warning restore CA1416 // Validate platform compatibility
 
         private void FindDBDXboxAction(RoutedEventArgs? obj)
         {
