@@ -16,6 +16,13 @@ namespace DBDIconRepo.ViewModel
 {
     public class PackDetailViewModel : ObservableObject
     {
+        Pack? _selected;
+        public Pack? SelectedPack
+        {
+            get => _selected;
+            set => SetProperty(ref _selected, value);
+        }
+
         public PackDetailViewModel() { }
         public PackDetailViewModel(Pack? selected)
         {
@@ -73,13 +80,6 @@ namespace DBDIconRepo.ViewModel
         {
             get => _readme;
             set => SetProperty(ref _readme, value);
-        }
-
-        Pack? _selected;
-        public Pack? SelectedPack
-        {
-            get => _selected;
-            set => SetProperty(ref _selected, value);
         }
 
         bool _hasBanner;
