@@ -19,170 +19,217 @@
     <Window.DataContext>
         <vm:PackDetailViewModel x:Name="ViewModel"/>
     </Window.DataContext>
-    <ui:NavigationView IsPaneToggleButtonVisible="False"
-                       IsBackButtonVisible="Collapsed"
-                       PaneDisplayMode="Top"
-                       IsSettingsVisible="False"
-                       IsBackEnabled="False">
-        <ui:NavigationView.Header>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <!-- Banner, if it's exist -->
-                <Image Grid.ColumnSpan="2" Visibility="{Binding HasBanner, Converter={StaticResource boolToVisibility}}"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!-- Only show as scrolling info -->
+        <TabControl>
+            <TabControl.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal"/>
+                </Style>
+                <Style TargetType="ui:FontIcon">
+                    <Setter Property="Margin" Value="4,0"/>
+                    <Setter Property="FontSize" Value="14"/>
+                </Style>
+            </TabControl.Resources>
+            <TabItem IsSelected="True">
+                <TabItem.Header>
+                    <StackPanel>
+                        <ui:FontIcon Glyph=""/>
+                        <TextBlock Text="Overview"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel>
+                        <ui:FontIcon Glyph=""/>
+                        <TextBlock Text="Readme"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasPerks, 
+                Converter={StaticResource boolToVisibility}}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:FontIcon Glyph="" Margin="4,0" FontSize="14"/>
+                        <TextBlock Text="Perks"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasPortraits, 
+                Converter={StaticResource boolToVisibility}}">
+                <TabItem.Header>
+                    <StackPanel>
+                        <ui:FontIcon Glyph=""/>
+                        <TextBlock Text="Portraits"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasPowers,
+                Converter={StaticResource boolToVisibility}}">
+                <TabItem.Header>
+                    <StackPanel>
+                        <ui:FontIcon Glyph=""/>
+                        <TextBlock Text="Killer powers"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasItems,
+                Converter={StaticResource boolToVisibility}}">
+                <TabItem.Header>
+                    <StackPanel>
+                        <ui:FontIcon Glyph=""/>
+                        <TextBlock Text="Survivor items"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasPowers,
+                Converter={StaticResource boolToVisibility}}">
+                <TabItem.Header>
+                    <StackPanel>
+                        <ui:FontIcon Glyph=""/>
+                        <TextBlock Text="Power/Item add-ons"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasStatus,
+                Converter={StaticResource boolToVisibility}}">
+                <TabItem.Header>
+                    <StackPanel>
+                        <ui:FontIcon Glyph=""/>
+                        <TextBlock Text="Status effects"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasOfferings,
+                Converter={StaticResource boolToVisibility}}">
+                <TabItem.Header>
+                    <StackPanel>
+                        <ui:FontIcon Glyph=""/>
+                        <TextBlock Text="Offerings"/>
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <ui:TabControlHelper.TabStripFooter>
+                <Button HorizontalAlignment="Right" Margin="4"
+                        x:Name="topDownloadButton">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon Glyph="" FontSize="14"/>
+                            <TextBlock Text="Install this pack"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </ui:TabControlHelper.TabStripFooter>
+        </TabControl>
+        <ScrollViewer Grid.Row="1" x:Name="mainContentScroll" ScrollChanged="DetermineYScroll">
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <!-- Pack detail -->
+                <Grid Grid.Row="0" x:Name="packDetailPanel" MinHeight="100">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Banner, if it's exist -->
+                    <Image Grid.ColumnSpan="2" Visibility="{Binding HasBanner, Converter={StaticResource boolToVisibility}}"
                        Source="{Binding BannerURL, Converter={StaticResource urlToImageSource}}"/>
-                <!-- Hero perk display assign by creator, 
-                     or first selected perk from user -->
-                <Image Source="{Binding HeroIconURL, Converter={StaticResource urlToImageSource}}"
-                       MaxWidth="72" MaxHeight="72" Margin="10"
-                       Visibility="{Binding HeroIconURL, Converter={StaticResource revealIfNotNull}}">
-                    <Image.Effect>
-                        <DropShadowEffect Color="Black" Direction="-50" 
-                                          ShadowDepth="4" BlurRadius="4" 
-                                          Opacity="0.25"/>
-                    </Image.Effect>
-                </Image>
-                <!-- Show this if it can't find any perk to match user wanted preview perk
-                or creator didn't assign primary preview icon-->
-                <ui:PersonPicture DisplayName="{Binding SelectedPack.Name}"
+
+                    <!-- Show this if it can't find any perk to match user wanted preview perk
+                    or creator didn't assign primary preview icon-->
+                    <ui:PersonPicture DisplayName="{Binding SelectedPack.Name}"
                                   MaxWidth="72" MaxHeight="72" Margin="10"
                                   Visibility="{Binding HeroIconURL, Converter={StaticResource revealIfNull}}"/>
 
-                <StackPanel Orientation="Vertical" Margin="10,4" Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding SelectedPack.Name}" FontSize="18"
+                    <!-- Hero perk display assign by creator, 
+                    or first selected perk from user -->
+                    <Image Source="{Binding HeroIconURL, Converter={StaticResource urlToImageSource}}"
+                       MaxWidth="72" MaxHeight="72" Margin="10"
+                       Visibility="{Binding HeroIconURL, Converter={StaticResource revealIfNotNull}}">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" Direction="-50" 
+                                          ShadowDepth="4" BlurRadius="4" 
+                                          Opacity="0.25"/>
+                        </Image.Effect>
+                    </Image>
+
+                    <StackPanel Orientation="Vertical" Margin="10,4" Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding SelectedPack.Name}" FontSize="18"
                                FontWeight="Black"/>
-                    <TextBlock Text="{Binding SelectedPack.Description}" FontSize="14"/>
-                    <TextBlock FontSize="14"> <!-- Open Git profile? -->
+                        <TextBlock Text="{Binding SelectedPack.Description}" FontSize="14"/>
+                        <TextBlock FontSize="14">
+                        <!-- Open Git profile? -->
                         Made by <Hyperlink ><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
-                    </TextBlock>
-                    <StackPanel Margin="0,5" Orientation="Horizontal">
-                        <Button>
-                            <StackPanel Orientation="Horizontal">
-                                <ui:FontIcon Glyph="" FontSize="12"/>
-                                <TextBlock FontSize="12" Text="Install" Margin="4,0"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Margin="5,0">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:FontIcon Glyph="" FontSize="12"/>
-                                <TextBlock FontSize="12" Text="Find pack origin" Margin="4,0"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>                    
-                </StackPanel>
-            </Grid>
-        </ui:NavigationView.Header>
-        <ui:NavigationView.MenuItems>
-            <ui:NavigationViewItem Content="Overview">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Perks">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Character Portraits">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Offerings">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Items">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Powers">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Items/Powers Add-ons">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Status effects">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Actions">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Emblems">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Help">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Help/Loading tips">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-        </ui:NavigationView.MenuItems>
-        <ui:NavigationView.Content>
-            <ScrollViewer Margin="4">
-                <Grid>
+                        </TextBlock>
+                        <StackPanel Margin="0,5" Orientation="Horizontal">
+                            <Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Glyph="" FontSize="12"/>
+                                    <TextBlock FontSize="12" Text="Install" Margin="4,0"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="5,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Glyph="" FontSize="12"/>
+                                    <TextBlock FontSize="12" Text="Find pack origin" Margin="4,0"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Readme preview -->
+                <Grid Grid.Row="1" Margin="0,8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Rectangle Fill="Black"/>
+                    <TextBlock Text="Readme content" Margin="4"/>
+                    <Rectangle Grid.Row="1" Fill="DimGray"/>
+                    <Expander Grid.Row="1" Margin="8,0"
+                              Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}"
+                              ExpandDirection="Up">
+                        <Expander.Header>
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <TextBlock Text="Show" Margin="5"/>
+                            </Grid>
+                        </Expander.Header>
+                        <Expander.Content>
+                            <Grid>
+                                <FlowDocumentReader ViewingMode="Scroll"  IsFindEnabled="False" 
+                                                    IsPrintEnabled="False" IsTwoPageViewEnabled="False"
+                                                    Document="{Binding ReadmeMDContent}" Margin="12"
+                                                    Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}"/>
+                            </Grid>
+                        </Expander.Content>
+                    </Expander>
+                </Grid>
+                
+
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <!-- Readme preview -->
-                    <TextBlock Text="Readme.md" FontSize="18" Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}"/>
-                    <Button HorizontalAlignment="Right" Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Read more"/>
-                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
-                        </StackPanel>
-                    </Button>
-                    <ScrollViewer MaxHeight="120" Grid.Row="1"
-                                  Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
-                        <FlowDocumentReader ViewingMode="Page"  IsFindEnabled="False" 
-                                            IsPrintEnabled="False" IsTwoPageViewEnabled="False"
-                                            Document="{Binding ReadmeMDContent}"
-                                            Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}"/>
-                    </ScrollViewer>
-                    <!-- Readme scroll blocker -->
-                    <Rectangle Fill="Transparent" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-
                     <!-- Perks sample preview -->
-                    <TextBlock Grid.Row="2" Text="Perks" FontSize="18"/>
-                    <Button Grid.Row="2" HorizontalAlignment="Right">
+                    <TextBlock Text="Perks" FontSize="18" VerticalAlignment="Center"/>
+                    <ToggleButton HorizontalAlignment="Right">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show more"/>
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
-                    </Button>
-                    <ListView HorizontalAlignment="Stretch" Grid.Row="3"
-                              Margin="0,4">
+                    </ToggleButton>
+                    <ListView IsHitTestVisible="False" HorizontalAlignment="Stretch" Grid.Row="1"
+                          Margin="0,4">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid Rows="1" HorizontalAlignment="Stretch"/>
@@ -199,7 +246,7 @@
                         </ListViewItem>
                     </ListView>
                 </Grid>
-            </ScrollViewer>
-        </ui:NavigationView.Content>
-    </ui:NavigationView>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
 </Window>

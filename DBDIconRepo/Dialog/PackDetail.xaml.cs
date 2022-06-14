@@ -33,12 +33,21 @@ namespace DBDIconRepo.Dialog
 
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         private void WindowUnloaded(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void DetermineYScroll(object sender, ScrollChangedEventArgs e)
+        {
+            topDownloadButton.Visibility =
+                mainContentScroll.ContentVerticalOffset > packDetailPanel.RenderSize.Height ? 
+                Visibility.Visible : Visibility.Collapsed;
+            System.Diagnostics.Debug.WriteLine($"Item height: {packDetailPanel.RenderSize.Height}" +
+                $"\r\nCurrent position? {mainContentScroll.ContentVerticalOffset} || {mainContentScroll.VerticalOffset}");
         }
     }
 }
