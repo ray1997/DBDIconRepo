@@ -108,13 +108,6 @@ namespace DBDIconRepo.ViewModel
             set => SetProperty(ref _heroIconURL, value);
         }
 
-        public bool _perkViewFocus;
-        public bool FocusOnPerkList
-        {
-            get => _perkViewFocus;
-            set => SetProperty(ref _perkViewFocus, value);
-        }
-
         //Perks display
         ObservableCollection<PerkPreviewItem> _perks;
         public ObservableCollection<PerkPreviewItem> PerksPreview
