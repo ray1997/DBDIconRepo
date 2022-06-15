@@ -4,6 +4,7 @@ using DBDIconRepo.Model;
 using IconPack.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -57,15 +58,19 @@ namespace DBDIconRepo.ViewModel
                 MdXaml.Markdown translator = new();
                 ReadmeMDContent = translator.Transform(md);
             }
-            /*
-            // using MdXaml;
-            // using System.Windows.Documents;
 
-            Markdown engine = new Markdown();
-
-            string markdownTxt = System.IO.File.ReadAllText("example.md");
-
-            FlowDocument document = engine.Transform(markdownTxt);*/
+            //Perk icons
+            if (SelectedPack.ContentInfo.HasPerks)
+            {
+                var perks = SelectedPack.ContentInfo.Files
+                    .Where(file => file.StartsWith("Perks") ||
+                    file.StartsWith("/Perks") ||
+                    file.StartsWith("\\Perks"))
+                    .Select(i => new PerkPreviewItem(i, SelectedPack.Repository))
+                    .Where(preview => preview.Perk is not null)
+                    .Shuffle();
+                PerksPreview = new ObservableCollection<PerkPreviewItem>(perks);
+            }
         }
 
         bool _hasReadme;
@@ -101,6 +106,14 @@ namespace DBDIconRepo.ViewModel
         {
             get => _heroIconURL;
             set => SetProperty(ref _heroIconURL, value);
+        }
+
+        //Perks display
+        ObservableCollection<PerkPreviewItem> _perks;
+        public ObservableCollection<PerkPreviewItem> PerksPreview
+        {
+            get => _perks;
+            set => SetProperty(ref _perks, value);
         }
     }
 }

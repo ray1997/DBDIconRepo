@@ -7,6 +7,7 @@
         xmlns:convert="clr-namespace:DBDIconRepo.Converters"
         ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:local="clr-namespace:DBDIconRepo.Dialog"
+        xmlns:m="clr-namespace:DBDIconRepo.Model"
         xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
         Title="{Binding SelectedPack.Name}"
         mc:Ignorable="d" Height="480" Width="640">
@@ -187,7 +188,7 @@
                 </Grid>
 
                 <!-- Readme preview -->
-                <Grid Grid.Row="1" Margin="0,8">
+                <Grid Grid.Row="1" Margin="0,8" Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -195,9 +196,7 @@
                     <Rectangle Fill="Black"/>
                     <TextBlock Text="Readme content" Margin="4"/>
                     <Rectangle Grid.Row="1" Fill="DimGray"/>
-                    <Expander Grid.Row="1" Margin="8,0"
-                              Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}"
-                              ExpandDirection="Up">
+                    <Expander Grid.Row="1" Margin="8,0" ExpandDirection="Up">
                         <Expander.Header>
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                 <TextBlock Text="Show" Margin="5"/>
@@ -213,9 +212,9 @@
                         </Expander.Content>
                     </Expander>
                 </Grid>
-                
 
-                <Grid Grid.Row="2">
+
+                <Grid Grid.Row="2" Visibility="{Binding SelectedPack.ContentInfo.HasPerks, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -228,22 +227,33 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </ToggleButton>
-                    <ListView IsHitTestVisible="False" HorizontalAlignment="Stretch" Grid.Row="1"
-                          Margin="0,4">
+                    <ListView IsHitTestVisible="False" HorizontalAlignment="Stretch" 
+                              ItemsSource="{Binding PerksPreview}"
+                              Grid.Row="1" Margin="0,4"
+                              ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid Rows="1" HorizontalAlignment="Stretch"/>
-                                <!--<WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>-->
+                                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
                             </ItemsPanelTemplate>
                         </ListView.ItemsPanel>
-                        <ListViewItem>
-                            <StackPanel Orientation="Vertical">
-                                <Image Width="128" Height="128"/>
-                                <TextBlock TextAlignment="Center">
-                                    Survivor name<LineBreak/>Perk name
-                                </TextBlock>
-                            </StackPanel>
-                        </ListViewItem>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Margin" Value="-4,2"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate DataType="{x:Type m:PerkPreviewItem}">
+                                <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
+                                    <Image Width="128" Height="128"
+                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                                    </Image>
+                                    <TextBlock TextAlignment="Center" Margin="4">
+                                        <Run FontSize="12" Text="{Binding Perk.PerkOwner}"/>
+                                        <LineBreak/><Run Text="{Binding Perk.Name}" FontWeight="Black"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
                     </ListView>
                 </Grid>
             </Grid>
