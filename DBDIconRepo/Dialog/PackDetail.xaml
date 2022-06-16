@@ -12,10 +12,18 @@
         Title="{Binding SelectedPack.Name}"
         mc:Ignorable="d" Height="480" Width="640">
     <Window.Resources>
+        <convert:InvertBool x:Key="invertBool"/>
         <convert:BoolToVisibility x:Key="boolToVisibility"/>
         <convert:URLtoAbsoluteURI x:Key="urlToImageSource"/>
         <convert:RevealIfNull x:Key="revealIfNull"/>
         <convert:RevealIfNotNull x:Key="revealIfNotNull"/>
+        
+        <convert:FocusModeToGridLength x:Key="focusGrid"/>
+        <convert:FocusModeToVisibility x:Key="focusToVisibility"/>
+        <convert:FocusModeToBool x:Key="focusToBool"/>
+        <convert:FocusModeToMaxLength x:Key="focusToLength"/>
+
+        <convert:PerkSortByToBool x:Key="perkSortByToBool"/>
     </Window.Resources>
     <Window.DataContext>
         <vm:PackDetailViewModel x:Name="ViewModel"/>
@@ -26,7 +34,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <!-- Only show as scrolling info -->
-        <TabControl>
+        <TabControl SelectionChanged="SetDetailFocusModeViaTab">
             <TabControl.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal"/>
@@ -36,7 +44,7 @@
                     <Setter Property="FontSize" Value="14"/>
                 </Style>
             </TabControl.Resources>
-            <TabItem IsSelected="True">
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Overview'}" Tag="Overview">
                 <TabItem.Header>
                     <StackPanel>
                         <ui:FontIcon Glyph=""/>
@@ -44,7 +52,7 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem>
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Readme'}" Tag="Readme">
                 <TabItem.Header>
                     <StackPanel>
                         <ui:FontIcon Glyph=""/>
@@ -52,8 +60,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasPerks, 
-                Converter={StaticResource boolToVisibility}}">
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Perks'}"
+                     Visibility="{Binding SelectedPack.ContentInfo.HasPerks, Converter={StaticResource boolToVisibility}}" Tag="Perks">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <ui:FontIcon Glyph="" Margin="4,0" FontSize="14"/>
@@ -130,9 +138,9 @@
         <ScrollViewer Grid.Row="1" x:Name="mainContentScroll" ScrollChanged="DetermineYScroll">
             <Grid Margin="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Overview'}"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Readme'}"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Perks'}"/>
                 </Grid.RowDefinitions>
                 <!-- Pack detail -->
                 <Grid Grid.Row="0" x:Name="packDetailPanel" MinHeight="100">
@@ -188,29 +196,54 @@
                 </Grid>
 
                 <!-- Readme preview -->
-                <Grid Grid.Row="1" Margin="0,8" Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
+                <Grid Grid.Row="1" Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Rectangle Fill="Black"/>
-                    <TextBlock Text="Readme content" Margin="4"/>
+                    <TextBlock Text="Readme" FontSize="18" VerticalAlignment="Center"/>
+                    
+                    <!--Expand to readme-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" Margin="0,4"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
+                        <Button.CommandParameter>
+                            <vm:DetailFocusMode>
+                                Readme
+                            </vm:DetailFocusMode>
+                        </Button.CommandParameter>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <!--Return to detail-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Readme'}">
+                        <Button.CommandParameter>
+                            <vm:DetailFocusMode>
+                                Overview
+                            </vm:DetailFocusMode>
+                        </Button.CommandParameter>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show less"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    
                     <Rectangle Grid.Row="1" Fill="DimGray"/>
-                    <Expander Grid.Row="1" Margin="8,0" ExpandDirection="Up">
-                        <Expander.Header>
-                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <TextBlock Text="Show" Margin="5"/>
-                            </Grid>
-                        </Expander.Header>
-                        <Expander.Content>
-                            <Grid>
-                                <FlowDocumentReader ViewingMode="Scroll"  IsFindEnabled="False" 
-                                                    IsPrintEnabled="False" IsTwoPageViewEnabled="False"
-                                                    Document="{Binding ReadmeMDContent}" Margin="12"
-                                                    Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}"/>
-                            </Grid>
-                        </Expander.Content>
-                    </Expander>
+                    <FlowDocumentScrollViewer IsToolBarVisible="False"
+                                              Margin="-6,4"
+                                              MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
+                                                  ConverterParameter='Overview|150|-1'}"
+                                              Grid.Row="1"
+                                              Document="{Binding ReadmeMDContent}">
+                    </FlowDocumentScrollViewer>
+                    <Rectangle Fill="Transparent" Grid.Row="1"
+                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                               Visibility="{Binding CurrentDisplayMode, Converter={StaticResource focusToBool}, ConverterParameter='Overview'}"/>
                 </Grid>
 
 
@@ -220,28 +253,68 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <!-- Perks sample preview -->
-                    <TextBlock Text="Perks" FontSize="18" VerticalAlignment="Center"/>
-                    <ToggleButton HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Perks" FontSize="18" VerticalAlignment="Center"/>
+                        <Button Margin="4,0" Visibility="{Binding CurrentDisplayMode, Converter={StaticResource focusToVisibility},
+                                ConverterParameter='Perks'}">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Sort"/>
+                                <TextBlock Text="Sort"/>
+                            </StackPanel>
+                            <ui:FlyoutService.Flyout>
+                                <ui:MenuFlyout>
+                                    <MenuItem IsCheckable="True" Header="Perk name" Command="{Binding SetPerkSortingMethod}" CommandParameter="Name"
+                                                      IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
+                                                Converter={StaticResource perkSortByToBool}, ConverterParameter='Name'}"/>
+                                    <MenuItem IsCheckable="True" Header="Character" Command="{Binding SetPerkSortingMethod}" CommandParameter="Owner"
+                                                      IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
+                                                Converter={StaticResource perkSortByToBool}, ConverterParameter='Owner'}"/>
+                                    <MenuItem IsCheckable="True" Header="Random" Command="{Binding SetPerkSortingMethod}" CommandParameter="Random"
+                                                      IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
+                                                Converter={StaticResource perkSortByToBool}, ConverterParameter='Random'}"/>
+                                    <Separator/>
+                                    <MenuItem IsCheckable="True" Header="Ascending" IsChecked="{Binding IsPerkSortByAscending, Mode=OneWay}"
+                                                      Command="{Binding SetPerkSortingAscendingMethod}" CommandParameter="true"/>
+                                    <MenuItem IsCheckable="True" Header="Descending" IsChecked="{Binding IsPerkSortByAscending, Mode=OneWay, Converter={StaticResource invertBool}}"
+                                                      Command="{Binding SetPerkSortingAscendingMethod}" CommandParameter="false"/>
+                                </ui:MenuFlyout>
+                            </ui:FlyoutService.Flyout>
+                        </Button>
+                    </StackPanel>
+                    <!--Expand to perk list-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" Margin="0,4"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
+                        <Button.CommandParameter>
+                            <vm:DetailFocusMode>
+                                Perks
+                            </vm:DetailFocusMode>
+                        </Button.CommandParameter>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show more"/>
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
-                    </ToggleButton>
-                    <ListView IsHitTestVisible="False" HorizontalAlignment="Stretch" 
-                              ItemsSource="{Binding PerksPreview}"
-                              Grid.Row="1" Margin="0,4"
-                              ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="Margin" Value="-4,2"/>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
+                    </Button>
+                    <!--Return to detail-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Perks'}">
+                        <Button.CommandParameter>
+                            <vm:DetailFocusMode>
+                                Overview
+                            </vm:DetailFocusMode>
+                        </Button.CommandParameter>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show less"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
+                                 ItemsSource="{Binding SortedPerks, Mode=OneWay}"
+                                 Grid.Row="1" Margin="0,4"
+                                 MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
+                        ConverterParameter='Overview|150|-1'}">
+                        <ui:GridView.ItemTemplate>
                             <DataTemplate DataType="{x:Type m:PerkPreviewItem}">
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="128" Height="128"
@@ -253,8 +326,8 @@
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                        </ui:GridView.ItemTemplate>
+                    </ui:GridView>
                 </Grid>
             </Grid>
         </ScrollViewer>
