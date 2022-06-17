@@ -218,8 +218,8 @@
                                FontWeight="Black"/>
                         <TextBlock Text="{Binding SelectedPack.Description}" FontSize="14"/>
                         <TextBlock FontSize="14">
-                        <!-- Open Git profile? -->
-                        Made by <Hyperlink ><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
+                            <!-- Open Git profile? -->
+                            Made by <Hyperlink ><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
                         </TextBlock>
                         <StackPanel Margin="0,5" Orientation="Horizontal">
                             <Button>
@@ -333,7 +333,7 @@
                         </StackPanel>
                     </Button>
                     <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
-                                 ItemsSource="{Binding SortedPerks, Mode=OneWay}"
+                                 ItemsSource="{Binding SortedPerks, IsAsync=True, Mode=OneWay}"
                                  Grid.Row="1" Margin="0,4"
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
                         ConverterParameter='Overview|172|-1'}">
@@ -377,7 +377,7 @@
                         </StackPanel>
                     </Button>
                     <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
-                                 ItemsSource="{Binding PortraitPreview, Mode=OneWay}"
+                                 ItemsSource="{Binding PortraitPreview, IsAsync=True, Mode=OneWay}"
                                  Grid.Row="1" Margin="0,4"
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
                         ConverterParameter='Overview|222|-1'}">
@@ -420,7 +420,7 @@
                         </StackPanel>
                     </Button>
                     <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
-                                 ItemsSource="{Binding PowerPreview, Mode=OneWay}"
+                                 ItemsSource="{Binding PowerPreview, IsAsync=True, Mode=OneWay}"
                                  Grid.Row="1" Margin="0,4"
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
                         ConverterParameter='Overview|120|-1'}">
@@ -464,7 +464,7 @@
                         </StackPanel>
                     </Button>
                     <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
-                                 ItemsSource="{Binding ItemsPreview, Mode=OneWay}"
+                                 ItemsSource="{Binding ItemsPreview, IsAsync=True, Mode=OneWay}"
                                  Grid.Row="1" Margin="0,4"
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
                         ConverterParameter='Overview|160|-1'}">
@@ -510,7 +510,7 @@
                         </StackPanel>
                     </Button>
                     <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
-                                 ItemsSource="{Binding AddonsPreview, Mode=OneWay}"
+                                 ItemsSource="{Binding AddonsPreview, IsAsync=True, Mode=OneWay}"
                                  Grid.Row="1" Margin="0,4"
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
                         ConverterParameter='Overview|125|-1'}"
@@ -541,7 +541,7 @@
                         </StackPanel>
                     </Button>
                     <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
-                                 ItemsSource="{Binding StatusEffectsPreview, Mode=OneWay}"
+                                 ItemsSource="{Binding StatusEffectsPreview, IsAsync=True, Mode=OneWay}"
                                  Grid.Row="1" Margin="0,4"
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
                         ConverterParameter='Overview|92|-1'}">
@@ -584,7 +584,7 @@
                         </StackPanel>
                     </Button>
                     <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
-                                 ItemsSource="{Binding OfferingsPreview, Mode=OneWay}"
+                                 ItemsSource="{Binding OfferingsPreview, IsAsync=True, Mode=OneWay}"
                                  Grid.Row="1" Margin="0,4"
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
                         ConverterParameter='Overview|130|-1'}">

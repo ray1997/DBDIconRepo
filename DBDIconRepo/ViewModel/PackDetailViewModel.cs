@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -35,7 +36,7 @@ namespace DBDIconRepo.ViewModel
             PrepareDisplayData();
         }
 
-        public void PrepareDisplayData()
+        public async void PrepareDisplayData()
         {
             string path = CacheOrGit.GetDisplayContentPath(SelectedPack.Repository.Owner, SelectedPack.Repository.Name);
             HasBanner = File.Exists($"{path}\\.banner.png");
@@ -71,9 +72,20 @@ namespace DBDIconRepo.ViewModel
                     file.StartsWith("/Perks") ||
                     file.StartsWith("\\Perks"))
                     .Select(i => new PerkPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Perk is not null)
-                    .Shuffle();
-                PerksPreview = new ObservableCollection<PerkPreviewItem>(perks);
+                    .Where(preview => preview.Perk is not null);
+                await Task.Run(async () =>
+                {
+                    foreach (var perk in perks)
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            if (PerksPreview is null)
+                                PerksPreview = new ObservableCollection<PerkPreviewItem>();
+                            PerksPreview.Add(perk);
+                        }, System.Windows.Threading.DispatcherPriority.Background);
+                    }
+                    SortingPerkList();
+                });
             }
 
             //Portrait icons
@@ -84,8 +96,19 @@ namespace DBDIconRepo.ViewModel
                     file.StartsWith("/CharPortraits") ||
                     file.StartsWith("\\CharPortraits"))
                     .Select(i => new PortraitPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null)
-                    .Shuffle();
+                    .Where(preview => preview.Name is not null);
+                await Task.Run(async () =>
+                {
+                    foreach (var portrait in portraits)
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            if (PortraitPreview is null)
+                                PortraitPreview = new ObservableCollection<PortraitPreviewItem>();
+                            PortraitPreview.Add(portrait);
+                        }, System.Windows.Threading.DispatcherPriority.Background);
+                    }
+                });
                 PortraitPreview = new ObservableCollection<PortraitPreviewItem>(portraits);
             }
 
@@ -97,9 +120,19 @@ namespace DBDIconRepo.ViewModel
                     file.StartsWith("/Powers") ||
                     file.StartsWith("\\Powers"))
                     .Select(i => new PowerPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null)
-                    .Shuffle();
-                PowerPreview = new ObservableCollection<PowerPreviewItem>(powers);
+                    .Where(preview => preview.Name is not null);
+                await Task.Run(async () =>
+                {
+                    foreach (var power in powers)
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            if (PowerPreview is null)
+                                PowerPreview = new ObservableCollection<PowerPreviewItem>();
+                            PowerPreview.Add(power);
+                        }, System.Windows.Threading.DispatcherPriority.Background);
+                    }
+                }); 
             }
 
             //Items
@@ -110,22 +143,19 @@ namespace DBDIconRepo.ViewModel
                     file.StartsWith("/items") ||
                     file.StartsWith("\\items"))
                     .Select(i => new ItemPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null)
-                    .Shuffle();
-                ItemsPreview = new ObservableCollection<ItemPreviewItem>(items);
-            }
-
-            //Addons
-            if (SelectedPack.ContentInfo.HasAddons)
-            {
-                var addons = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("ItemAddons") ||
-                    file.StartsWith("/ItemAddons") ||
-                    file.StartsWith("\\ItemAddons"))
-                    .Select(i => new AddonPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null)
-                    .Shuffle();
-                AddonsPreview = new ObservableCollection<AddonPreviewItem>(addons);
+                    .Where(preview => preview.Name is not null);
+                await Task.Run(async () =>
+                {
+                    foreach (var item in items)
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            if (ItemsPreview is null)
+                                ItemsPreview = new ObservableCollection<ItemPreviewItem>();
+                            ItemsPreview.Add(item);
+                        }, System.Windows.Threading.DispatcherPriority.Background);
+                    }
+                });
             }
 
             //Status
@@ -136,9 +166,19 @@ namespace DBDIconRepo.ViewModel
                     file.StartsWith("/StatusEffects") ||
                     file.StartsWith("\\StatusEffects"))
                     .Select(i => new StatusEffectPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null)
-                    .Shuffle();
-                StatusEffectsPreview = new ObservableCollection<StatusEffectPreviewItem>(status);
+                    .Where(preview => preview.Name is not null);
+                await Task.Run(async () =>
+                {
+                    foreach (var st in status)
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            if (StatusEffectsPreview is null)
+                                StatusEffectsPreview = new ObservableCollection<StatusEffectPreviewItem>();
+                            StatusEffectsPreview.Add(st);
+                        }, System.Windows.Threading.DispatcherPriority.Background);
+                    }
+                });
             }
 
             //Offerings
@@ -149,10 +189,44 @@ namespace DBDIconRepo.ViewModel
                     file.StartsWith("/Favors") ||
                     file.StartsWith("\\Favors"))
                     .Select(i => new OfferingPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null)
-                    .Shuffle();
-                OfferingsPreview = new ObservableCollection<OfferingPreviewItem>(offerings);
+                    .Where(preview => preview.Name is not null);
+                await Task.Run(async () =>
+                {
+                    foreach (var offering in offerings)
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            if (OfferingsPreview is null)
+                                OfferingsPreview = new ObservableCollection<OfferingPreviewItem>();
+                            OfferingsPreview.Add(offering);
+                        }, System.Windows.Threading.DispatcherPriority.Background);
+                    }
+                });
             }
+
+            //Addons
+            if (SelectedPack.ContentInfo.HasAddons)
+            {
+                var addons = SelectedPack.ContentInfo.Files
+                    .Where(file => file.StartsWith("ItemAddons") ||
+                    file.StartsWith("/ItemAddons") ||
+                    file.StartsWith("\\ItemAddons"))
+                    .Select(i => new AddonPreviewItem(i, SelectedPack.Repository))
+                    .Where(preview => preview.Name is not null);
+                await Task.Run(async () =>
+                {
+                    foreach (var addon in addons)
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            if (AddonsPreview is null)
+                                AddonsPreview = new ObservableCollection<AddonPreviewItem>();
+                            AddonsPreview.Add(addon);
+                        }, System.Windows.Threading.DispatcherPriority.Background);
+                    }
+                });
+            }
+
 
             //TODO:When showing emblems sort it by name, then by type (none, silver, gold, iri etc.)
         }
@@ -304,7 +378,7 @@ namespace DBDIconRepo.ViewModel
             }
         }
 
-        PerkSortBy _perkSortBy = PerkSortBy.Random;
+        PerkSortBy _perkSortBy = PerkSortBy.Name;
         public PerkSortBy CurrentPerkSortingMethod
         {
             get => _perkSortBy;
