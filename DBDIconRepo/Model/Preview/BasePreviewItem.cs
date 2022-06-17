@@ -5,20 +5,19 @@ using System;
 using System.Linq;
 using Info = IconPack.Helper.Info;
 
-namespace DBDIconRepo.Model
+namespace DBDIconRepo.Model.Preview
 {
-    public class PerkPreviewItem : ObservableObject
+    public class BasePreviewItem : ObservableObject, IBaseItemInfo
     {
-        public PerkInfo? Perk { get; set; }
-
-        public PerkPreviewItem(string path, PackRepositoryInfo repo)
+        string? _name;
+        public string? Name
         {
-            string perkName = "";
-            if (path.Contains('/') || path.Contains('\\'))
-                perkName = path.Split("/\\".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Last();
-            if (perkName.EndsWith(".png"))
-                perkName = perkName.Replace(".png", "");
-            Perk = Info.Perks.ContainsKey(perkName) ? Info.Perks[perkName] as PerkInfo : null;
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+
+        public BasePreviewItem(string path, PackRepositoryInfo repo)
+        {
             IconURL = URL.GetIconAsGitRawContent(repo, path);
         }
 

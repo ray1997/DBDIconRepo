@@ -8,6 +8,8 @@
         ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:local="clr-namespace:DBDIconRepo.Dialog"
         xmlns:m="clr-namespace:DBDIconRepo.Model"
+        xmlns:pv="clr-namespace:DBDIconRepo.Model.Preview"
+        xmlns:im="clr-namespace:IconPack.Model;assembly=IconPack"
         xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
         Title="{Binding SelectedPack.Name}"
         mc:Ignorable="d" Height="480" Width="640">
@@ -24,6 +26,34 @@
         <convert:FocusModeToMaxLength x:Key="focusToLength"/>
 
         <convert:PerkSortByToBool x:Key="perkSortByToBool"/>
+        
+        <!--Addon preview-->
+        <DataTemplate x:Key="survivorAddonTemplate" DataType="{x:Type pv:AddonPreviewItem}">
+            <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
+                <Image Width="64" Height="64" VerticalAlignment="Center"
+                       Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                </Image>
+                <TextBlock TextAlignment="Center" Margin="4">
+                    <LineBreak/><Run FontSize="12" Text="{Binding AddOns.For}"/>
+                    <LineBreak/><Run Text="{Binding AddOns.Name, Mode=OneWay}" FontWeight="Black"/>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="killerAddonTemplate" DataType="{x:Type pv:AddonPreviewItem}">
+            <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
+                <Image Width="64" Height="64"
+                       Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                </Image>
+                <TextBlock TextAlignment="Center" Margin="4">
+                    <Run FontSize="12" Text="{Binding AddOns.Owner}"/>
+                    <LineBreak/><Run FontSize="12" Text="{Binding AddOns.For}"/>
+                    <LineBreak/><Run Text="{Binding AddOns.Name}" FontWeight="Black"/>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+        <local:AddonsPreviewTemplateSelector SurvivorItemAddons="{StaticResource survivorAddonTemplate}"
+                                             KillerItemAddons="{StaticResource killerAddonTemplate}"
+                                             x:Key="addonsPreviewTemplator"/>
     </Window.Resources>
     <Window.DataContext>
         <vm:PackDetailViewModel x:Name="ViewModel"/>
@@ -52,7 +82,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Readme'}" Tag="Readme">
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Readme'}" Tag="Readme"
+                     Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
                 <TabItem.Header>
                     <StackPanel>
                         <ui:FontIcon Glyph=""/>
@@ -60,8 +91,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Perks'}"
-                     Visibility="{Binding SelectedPack.ContentInfo.HasPerks, Converter={StaticResource boolToVisibility}}" Tag="Perks">
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Perks'}" Tag="Perks"
+                     Visibility="{Binding SelectedPack.ContentInfo.HasPerks, Converter={StaticResource boolToVisibility}}">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <ui:FontIcon Glyph="" Margin="4,0" FontSize="14"/>
@@ -69,7 +100,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasPortraits, 
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Portraits'}" Tag="Portraits"
+                     Visibility="{Binding SelectedPack.ContentInfo.HasPortraits, 
                 Converter={StaticResource boolToVisibility}}">
                 <TabItem.Header>
                     <StackPanel>
@@ -78,7 +110,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasPowers,
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Powers'}" Tag="Powers"
+                     Visibility="{Binding SelectedPack.ContentInfo.HasPowers,
                 Converter={StaticResource boolToVisibility}}">
                 <TabItem.Header>
                     <StackPanel>
@@ -87,7 +120,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasItems,
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Items'}" Tag="Items"
+                     Visibility="{Binding SelectedPack.ContentInfo.HasItems,
                 Converter={StaticResource boolToVisibility}}">
                 <TabItem.Header>
                     <StackPanel>
@@ -96,7 +130,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasPowers,
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Addons'}" Tag="Addons"
+                     Visibility="{Binding SelectedPack.ContentInfo.HasPowers,
                 Converter={StaticResource boolToVisibility}}">
                 <TabItem.Header>
                     <StackPanel>
@@ -105,7 +140,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasStatus,
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Status'}" Tag="Status"
+                     Visibility="{Binding SelectedPack.ContentInfo.HasStatus,
                 Converter={StaticResource boolToVisibility}}">
                 <TabItem.Header>
                     <StackPanel>
@@ -114,7 +150,8 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem Visibility="{Binding SelectedPack.ContentInfo.HasOfferings,
+            <TabItem IsSelected="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToBool}, ConverterParameter='Offerings'}" Tag="Offerings"
+                     Visibility="{Binding SelectedPack.ContentInfo.HasOfferings,
                 Converter={StaticResource boolToVisibility}}">
                 <TabItem.Header>
                     <StackPanel>
@@ -136,11 +173,17 @@
             </ui:TabControlHelper.TabStripFooter>
         </TabControl>
         <ScrollViewer Grid.Row="1" x:Name="mainContentScroll" ScrollChanged="DetermineYScroll">
-            <Grid Margin="4">
+            <Grid Margin="4,4,0,10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Overview'}"/>
                     <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Readme'}"/>
                     <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Perks'}"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Portraits'}"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Powers'}"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Items'}"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Addons'}"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Status'}"/>
+                    <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Offerings'}"/>
                 </Grid.RowDefinitions>
                 <!-- Pack detail -->
                 <Grid Grid.Row="0" x:Name="packDetailPanel" MinHeight="100">
@@ -205,28 +248,18 @@
                     <TextBlock Text="Readme" FontSize="18" VerticalAlignment="Center"/>
                     
                     <!--Expand to readme-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" Margin="0,4"
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Readme" Margin="0,4"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
-                        <Button.CommandParameter>
-                            <vm:DetailFocusMode>
-                                Readme
-                            </vm:DetailFocusMode>
-                        </Button.CommandParameter>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show more"/>
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}"
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Readme'}">
-                        <Button.CommandParameter>
-                            <vm:DetailFocusMode>
-                                Overview
-                            </vm:DetailFocusMode>
-                        </Button.CommandParameter>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
@@ -246,7 +279,7 @@
                                Visibility="{Binding CurrentDisplayMode, Converter={StaticResource focusToBool}, ConverterParameter='Overview'}"/>
                 </Grid>
 
-
+                <!-- Perks -->
                 <Grid Grid.Row="2" Visibility="{Binding SelectedPack.ContentInfo.HasPerks, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -282,28 +315,18 @@
                         </Button>
                     </StackPanel>
                     <!--Expand to perk list-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" Margin="0,4"
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Perks" Margin="0,4"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
-                        <Button.CommandParameter>
-                            <vm:DetailFocusMode>
-                                Perks
-                            </vm:DetailFocusMode>
-                        </Button.CommandParameter>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show more"/>
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}"
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Perks'}">
-                        <Button.CommandParameter>
-                            <vm:DetailFocusMode>
-                                Overview
-                            </vm:DetailFocusMode>
-                        </Button.CommandParameter>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
@@ -313,9 +336,9 @@
                                  ItemsSource="{Binding SortedPerks, Mode=OneWay}"
                                  Grid.Row="1" Margin="0,4"
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
-                        ConverterParameter='Overview|150|-1'}">
+                        ConverterParameter='Overview|172|-1'}">
                         <ui:GridView.ItemTemplate>
-                            <DataTemplate DataType="{x:Type m:PerkPreviewItem}">
+                            <DataTemplate DataType="{x:Type pv:PerkPreviewItem}">
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="128" Height="128"
                                            Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
@@ -329,6 +352,257 @@
                         </ui:GridView.ItemTemplate>
                     </ui:GridView>
                 </Grid>
+
+                <!-- Portraits -->
+                <Grid Grid.Row="3" Visibility="{Binding SelectedPack.ContentInfo.HasPortraits, Converter={StaticResource boolToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Character portraits" FontSize="18" VerticalAlignment="Center"/>
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Portraits"
+                            Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <!--Return to detail-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Portraits'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show less"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
+                                 ItemsSource="{Binding PortraitPreview, Mode=OneWay}"
+                                 Grid.Row="1" Margin="0,4"
+                                 MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
+                        ConverterParameter='Overview|222|-1'}">
+                        <ui:GridView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
+                                    <Image Width="192" Height="192"
+                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                                    </Image>
+                                    <TextBlock TextAlignment="Center" Margin="4">
+                                        <Run Text="{Binding Name}" FontWeight="Black"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ui:GridView.ItemTemplate>
+                    </ui:GridView>
+                </Grid>
+
+                <!-- Powers -->
+                <Grid Grid.Row="4" Visibility="{Binding SelectedPack.ContentInfo.HasPowers, Converter={StaticResource boolToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Killer powers" FontSize="18" VerticalAlignment="Center"/>
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Powers"
+                            Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <!--Return to detail-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Powers'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show less"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
+                                 ItemsSource="{Binding PowerPreview, Mode=OneWay}"
+                                 Grid.Row="1" Margin="0,4"
+                                 MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
+                        ConverterParameter='Overview|120|-1'}">
+                        <ui:GridView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
+                                    <Image Width="72" Height="72"
+                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                                    </Image>
+                                    <TextBlock TextAlignment="Center" Margin="4">
+                                        <Run FontSize="12" Text="{Binding PowerInfo.PowerOwner}"/>
+                                        <LineBreak/><Run Text="{Binding PowerInfo.Name}" FontWeight="Black"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ui:GridView.ItemTemplate>
+                    </ui:GridView>
+                </Grid>
+                
+                <!-- Items -->
+                <Grid Grid.Row="5" Visibility="{Binding SelectedPack.ContentInfo.HasItems, Converter={StaticResource boolToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Survivor items" FontSize="18" VerticalAlignment="Center"/>
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Items"
+                            Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <!--Return to detail-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Items'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show less"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
+                                 ItemsSource="{Binding ItemsPreview, Mode=OneWay}"
+                                 Grid.Row="1" Margin="0,4"
+                                 MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
+                        ConverterParameter='Overview|160|-1'}">
+                        <ui:GridView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
+                                    <Image Width="128" Height="128"
+                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                                    </Image>
+                                    <TextBlock TextAlignment="Center" Margin="4">
+                                        <Run Text="{Binding Name}" FontWeight="Black"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ui:GridView.ItemTemplate>
+                    </ui:GridView>
+                </Grid>
+
+                <!-- Addons -->
+                <Grid Grid.Row="6" Visibility="{Binding SelectedPack.ContentInfo.HasAddons, Converter={StaticResource boolToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="Killer power/Survivor item Addons" FontSize="18" VerticalAlignment="Center"/>
+                    
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Addons" Margin="0,4"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <!--Return to detail-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Addons'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show less"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
+                                 ItemsSource="{Binding AddonsPreview, Mode=OneWay}"
+                                 Grid.Row="1" Margin="0,4"
+                                 MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
+                        ConverterParameter='Overview|125|-1'}"
+                                 ItemTemplateSelector="{StaticResource addonsPreviewTemplator}"/>
+                </Grid>
+
+                <!-- Status effect -->
+                <Grid Grid.Row="7" Visibility="{Binding SelectedPack.ContentInfo.HasStatus, Converter={StaticResource boolToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Status effect" FontSize="18" VerticalAlignment="Center"/>
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Status"
+                            Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <!--Return to detail-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Status'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show less"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
+                                 ItemsSource="{Binding StatusEffectsPreview, Mode=OneWay}"
+                                 Grid.Row="1" Margin="0,4"
+                                 MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
+                        ConverterParameter='Overview|92|-1'}">
+                        <ui:GridView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
+                                    <Image Width="64" Height="64"
+                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                                    </Image>
+                                    <TextBlock TextAlignment="Center" Margin="4">
+                                        <Run Text="{Binding Name}" FontWeight="Black"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ui:GridView.ItemTemplate>
+                    </ui:GridView>
+                </Grid>
+
+                <!-- Offerings -->
+                <Grid Grid.Row="8" Visibility="{Binding SelectedPack.ContentInfo.HasOfferings, Converter={StaticResource boolToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Offerings" FontSize="18" VerticalAlignment="Center"/>
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Offerings"
+                            Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                        Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show more"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <!--Return to detail-->
+                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Offerings'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show less"/>
+                            <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
+                        </StackPanel>
+                    </Button>
+                    <ui:GridView IsHitTestVisible="False" HorizontalAlignment="Stretch"
+                                 ItemsSource="{Binding OfferingsPreview, Mode=OneWay}"
+                                 Grid.Row="1" Margin="0,4"
+                                 MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
+                        ConverterParameter='Overview|130|-1'}">
+                        <ui:GridView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
+                                    <Image Width="96" Height="96"
+                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                                    </Image>
+                                    <TextBlock TextAlignment="Center" Margin="4">
+                                        <Run Text="{Binding Name}" FontWeight="Black"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ui:GridView.ItemTemplate>
+                    </ui:GridView>
+                </Grid>
+
             </Grid>
         </ScrollViewer>
     </Grid>

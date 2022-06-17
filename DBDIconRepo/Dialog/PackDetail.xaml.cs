@@ -69,6 +69,7 @@ namespace DBDIconRepo.Dialog
                                 Visibility.Visible : Visibility.Collapsed);
                         if ((DataContext as PackDetailViewModel)?.CurrentDisplayMode.ToString() == str)
                             return;
+                        mainContentScroll.ScrollToVerticalOffset(0);
                         switch (str)
                         {
                             case "Overview":
@@ -80,8 +81,43 @@ namespace DBDIconRepo.Dialog
                             case "Perks":
                                 (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Perks;
                                 break;
+                            case "Portraits":
+                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Portraits;
+                                break;
+                            case "Powers":
+                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Powers;
+                                break;
+                            case "Items":
+                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Items;
+                                break;
+                            case "Addons":
+                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Addons;
+                                break;
+                            case "Status":
+                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Status;
+                                break;
+                            case "Offerings":
+                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Offerings;
+                                break;
                         }
                     }
+        }
+    }
+
+    public class AddonsPreviewTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate? SurvivorItemAddons { get; set; }
+        public DataTemplate? KillerItemAddons { get; set; }
+        public override DataTemplate? SelectTemplate(object item, DependencyObject container)
+        {
+            if (item is Model.Preview.AddonPreviewItem info)
+            {
+                if (info.AddOns.Owner is null)
+                    return SurvivorItemAddons;
+                else
+                    return KillerItemAddons;
+            }
+            return base.SelectTemplate(item, container);
         }
     }
 }

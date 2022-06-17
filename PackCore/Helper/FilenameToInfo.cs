@@ -1259,7 +1259,7 @@ namespace IconPack.Helper
                     { "Favors/Yemen/iconFavors_tornBlueprint", "Torn Blueprint" },
                     { "Favors/Yemen/iconFavors_vigosBlueprint", "Vigo's Blueprint" },
                     { "Favors/Yemen/iconFavors_wardSacrificial", "Sacrificial Ward" }
-                }
+                };
             }
         }
 
@@ -1297,16 +1297,17 @@ namespace IconPack.Helper
                     { "iconStatusEffects_speed", "Speed" },
                     { "iconStatusEffects_undetectable", "Undetectable" },
                     { "iconStatusEffects_vision", "Vision" }
-                }
+                };
             }
         }
 
         public static IBaseItemInfo? GetItemAddonsInfo(string path)
         {
-            if (ItemAddons.ContainsKey(path.
-                Split("/\\".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
-                .Last()))
-                return ItemAddons[path];
+            path = path.Replace("ItemAddons/", "");
+            path = path.Replace(".png", "");
+            string itemAddon = path.Split("/\\".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Last();
+            if (ItemAddons.ContainsKey(itemAddon))
+                return ItemAddons[itemAddon];
             else if (PowerAddons.ContainsKey(path))
                 return PowerAddons[path];
             return null;
