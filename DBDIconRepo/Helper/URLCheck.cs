@@ -43,5 +43,16 @@ namespace DBDIconRepo.Helper
                 match = match.Replace("\\", "/");
             return match;
         }
+
+        public static void OpenURL(string? url)
+        {
+            if (url is null) return;
+            if (!url.StartsWith("https"))
+                //Disallow from open anything else, beside link
+                return;
+
+            var pif = new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true };
+            System.Diagnostics.Process.Start(pif);
+        }
     }
 }

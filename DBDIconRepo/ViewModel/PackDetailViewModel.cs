@@ -112,6 +112,8 @@ namespace DBDIconRepo.ViewModel
                 PortraitPreview = new ObservableCollection<PortraitPreviewItem>(portraits);
             }
 
+#if DEBUG
+#else
             //Powers
             if (SelectedPack.ContentInfo.HasPowers)
             {
@@ -226,7 +228,7 @@ namespace DBDIconRepo.ViewModel
                     }
                 });
             }
-
+#endif
 
             //TODO:When showing emblems sort it by name, then by type (none, silver, gold, iri etc.)
         }
@@ -360,7 +362,6 @@ namespace DBDIconRepo.ViewModel
                         else
                             return new ObservableCollection<PerkPreviewItem>(
                                 PerksPreview.OrderByDescending(perk => perk.Perk.Name));
-                        break;
                     case PerkSortBy.Owner:
                         if (IsPerkSortByAscending)
                             return new ObservableCollection<PerkPreviewItem>(
@@ -368,11 +369,9 @@ namespace DBDIconRepo.ViewModel
                         else
                             return new ObservableCollection<PerkPreviewItem>(
                                 PerksPreview.OrderByDescending(perk => perk.Perk.PerkOwner));
-                        break;
                     case PerkSortBy.Random:
                         return new ObservableCollection<PerkPreviewItem>(
                             PerksPreview.Shuffle());
-                        break;
                 }
                 return new ObservableCollection<PerkPreviewItem>(PerksPreview);
             }
@@ -408,11 +407,25 @@ namespace DBDIconRepo.ViewModel
         public ICommand? SetDisplayMode { get; private set; }
         public ICommand? SetPerkSortingMethod { get; private set; }
         public ICommand? SetPerkSortingAscendingMethod { get; private set; }
+        public ICommand? OpenPackURL { get; private set; }
+        public ICommand? OpenOwnerURL { get; private set; }
         private void PrepareCommands()
         {
             SetDisplayMode = new RelayCommand<string?>(SetDisplayModeAction);
             SetPerkSortingMethod = new RelayCommand<string?>(SetPerkSortingMethodAction);
             SetPerkSortingAscendingMethod = new RelayCommand<string?>(SetPerkSortingAscendingMethodAction);
+            OpenPackURL = new RelayCommand<RoutedEventArgs>(OpenPackURLAction);
+            OpenOwnerURL = new RelayCommand<RoutedEventArgs>(OpenOwnerURLAction);
+        }
+
+        private void OpenOwnerURLAction(RoutedEventArgs? obj)
+        {
+            URL.OpenURL($"https://www.github.com/{SelectedPack.Repository.Owner}");
+        }
+
+        private void OpenPackURLAction(RoutedEventArgs? obj)
+        {
+            URL.OpenURL(SelectedPack.URL);
         }
 
         private void SetPerkSortingAscendingMethodAction(string? str)

@@ -43,14 +43,12 @@ namespace DBDIconRepo.Model
 
         //
         public ICommand? SearchForThisAuthor { get; private set; }
-        public ICommand? OpenGitOfThisPack { get; private set; }
         public ICommand? InstallThisPack { get; private set; }
         public ICommand? OpenPackDetailWindow { get; private set; }
 
         private void InitializeCommand()
         {
             SearchForThisAuthor = new RelayCommand<RoutedEventArgs>(SearchForThisAuthorAction); 
-            OpenGitOfThisPack = new RelayCommand<RoutedEventArgs>(OpenGitOfThisPackAction);
             InstallThisPack = new RelayCommand<RoutedEventArgs>(InstallThisPackAction);
             OpenPackDetailWindow = new RelayCommand<RoutedEventArgs>(OpenPackDetailWindowAction);
         }
@@ -121,15 +119,6 @@ namespace DBDIconRepo.Model
                 TotalDownloadProgress = 100;
                 IsDownloading = false;
             }
-        }
-
-        private void OpenGitOfThisPackAction(RoutedEventArgs? obj)
-        {
-            var processInfo = new System.Diagnostics.ProcessStartInfo(Info.URL)
-            {
-                UseShellExecute = true
-            };
-            System.Diagnostics.Process.Start(processInfo);
         }
 
         public void HandleURLs()

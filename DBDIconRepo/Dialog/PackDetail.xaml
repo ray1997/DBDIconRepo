@@ -219,7 +219,7 @@
                         <TextBlock Text="{Binding SelectedPack.Description}" FontSize="14"/>
                         <TextBlock FontSize="14">
                             <!-- Open Git profile? -->
-                            Made by <Hyperlink ><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
+                            Made by <Hyperlink Command="{Binding OpenOwnerURL}"><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
                         </TextBlock>
                         <StackPanel Margin="0,5" Orientation="Horizontal">
                             <Button>
@@ -228,7 +228,7 @@
                                     <TextBlock FontSize="12" Text="Install" Margin="4,0"/>
                                 </StackPanel>
                             </Button>
-                            <Button Margin="5,0">
+                            <Button Margin="5,0" Command="{Binding OpenPackURL}">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph="" FontSize="12"/>
                                     <TextBlock FontSize="12" Text="Find pack origin" Margin="4,0"/>
