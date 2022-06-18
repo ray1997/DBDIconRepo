@@ -132,7 +132,7 @@ namespace IconPack.Helper
                     { "iconPerks_luckyBreak", new PerkInfo("Lucky Break", "Yui Kimura") },
                     { "iconPerks_madGrit", new PerkInfo("Mad Grit", "The Legion") },
                     { "iconPerks_makeYourChoice", new PerkInfo("Make Your Choice", "The Pig") },
-                    { "iconPerks_mercilessStrom", new PerkInfo("Merciless storm", "The Onryō") },
+                    { "iconPerks_mercilessStorm", new PerkInfo("Merciless storm", "The Onryō") },
                     { "iconPerks_mindBreaker", new PerkInfo("Fearmonger", null) },
                     { "iconPerks_monitorAndAbuse", new PerkInfo("Monitor & Abuse", "The Doctor") },
                     { "iconPerks_monstrousShrine", new PerkInfo("Monstrous Shrine", null) },
