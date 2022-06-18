@@ -112,8 +112,6 @@ namespace DBDIconRepo.ViewModel
                 PortraitPreview = new ObservableCollection<PortraitPreviewItem>(portraits);
             }
 
-#if DEBUG
-#else
             //Powers
             if (SelectedPack.ContentInfo.HasPowers)
             {
@@ -228,7 +226,6 @@ namespace DBDIconRepo.ViewModel
                     }
                 });
             }
-#endif
 
             //TODO:When showing emblems sort it by name, then by type (none, silver, gold, iri etc.)
         }
