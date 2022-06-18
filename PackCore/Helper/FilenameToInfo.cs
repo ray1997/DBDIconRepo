@@ -145,7 +145,7 @@ namespace IconPack.Helper
                     { "iconPerks_offTheRecord", new PerkInfo("Off the Record", "Zarina Kassir") },
                     { "iconPerks_openHanded", new PerkInfo("Open-Handed", "Ace Visconti") },
                     { "iconPerks_Oppression", new PerkInfo("Oppression", "The Twins") },
-                    { "iconPerks_overwelmingPresence", new PerkInfo("Overwelming Presence", "The Doctor") },
+                    { "iconPerks_overwhelmingPresence", new PerkInfo("Overwhelming Presence", "The Doctor") },
                     { "iconPerks_Overzealous", new PerkInfo("Overzealous", "Haddie Kaur") },
                     { "iconPerks_parentalGuidance", new PerkInfo("Parental Guidance", "Yoichi Asakawa") },
                     { "iconPerks_pharmacy", new PerkInfo("Pharmacy", "Quentin Smith") },
