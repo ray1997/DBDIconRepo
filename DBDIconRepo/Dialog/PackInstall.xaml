@@ -28,20 +28,20 @@
         <TextBlock Text="Select which components to install" FontSize="18" Margin="4,0" FontWeight="Bold"/>
         
         <TreeView Grid.Row="1" ItemsSource="{Binding InstallableItems}">
+            <!-- Expand all items by default, but cause app to froze quite a while -->
+            <!--<TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem" BasedOn="{StaticResource DefaultTreeViewItemStyle}">
+                    <Setter Property="TreeViewItem.IsExpanded" Value="True"/>
+                </Style>
+            </TreeView.ItemContainerStyle>-->
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFolder}"
                                           ItemsSource="{Binding Childs}">
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
-                            <CheckBox.Content>
-                                <TextBlock>
-                                    <Run Text="{Binding Info.Name}"/> (<Run Text="{Binding Name}"/>)
-                                </TextBlock>
-                            </CheckBox.Content>
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding Info, Converter={StaticResource showIfNull}}">
-                            <TextBlock Text="{Binding Name}"/>
-                        </CheckBox>
+                        <TextBlock Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
+                            <Run Text="{Binding Info.Name}"/> (<Run Text="{Binding Name}"/>)
+                        </TextBlock>
+                        <TextBlock Text="{Binding Name}" Visibility="{Binding Info, Converter={StaticResource showIfNull}}"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFile}">

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DBDIconRepo.Helper;
 using IconPack.Model;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -34,34 +35,7 @@ namespace DBDIconRepo.Model
             set { }
         }
 
-        public bool? IsSelected
-        {
-            get
-            {
-                if (Childs is null)
-                    return null;
-                var collectives = Childs.Select(i => i.IsSelected).Distinct();
-                int amount = collectives.Count();
-                if (amount == 0)
-                    return null; //It's empty
-                if (amount > 1) //There's true & false
-                    return null; //Indetermine state
-                return collectives.First(); //They are all on 1 state
-            }
-            set
-            {
-                if (value is null)
-                    return;
-                if (Childs?.Count < 1)
-                    //No child?
-                    return;
-                //Set all child to the same state as required
-                for (int count = 0; count < Childs.Count; count++)
-                {
-                    Childs[count].IsSelected = value.Value;
-                }
-            }
-        }
+        public bool? IsSelected { get; set; }
 
         IBaseItemInfo? _info;
         public IBaseItemInfo? Info
