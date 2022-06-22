@@ -47,7 +47,7 @@ namespace DBDIconRepo.Dialog
         public DataTemplate? KillerPowerAddonsSelection { get; set; }
         public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
-            if (item is Model.PackSelectionItem psi)
+            if (item is Model.IPackSelectionItem psi)
             {
                 if (psi.Name is null)
                     return GenericNoInfoItem;

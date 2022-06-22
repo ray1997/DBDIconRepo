@@ -3,13 +3,10 @@ using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using IconPack.Model;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
+using PackInfo = IconPack.Helper.Info;
 
 namespace DBDIconRepo.ViewModel
 {
@@ -22,11 +19,11 @@ namespace DBDIconRepo.ViewModel
             set => SetProperty(ref _selected, value);
         }
 
-        ObservableCollection<PackSelectionItem>? _selectionItems;
-        public ObservableCollection<PackSelectionItem>? InstallableItems
+        ObservableCollection<IPackSelectionItem>? _selections;
+        public ObservableCollection<IPackSelectionItem>? InstallableItems
         {
-            get => _selectionItems;
-            set => SetProperty(ref _selectionItems, value);
+            get => _selections;
+            set => SetProperty(ref _selections, value);
         }
 
         public ICommand? InstallPack { get; private set; }
@@ -34,23 +31,16 @@ namespace DBDIconRepo.ViewModel
         public PackInstallViewModel(Pack? selected)
         {
             SelectedPack = selected;
-            var allFiles = SelectedPack.ContentInfo.Files
-                .Where(file => file.EndsWith(".png"))
-                .Select(file => new PackSelectionItem(file))
-                .OrderBy(item => item.FolderName)
-                .ThenBy(item => item.SubFolderName is null)
-                .ThenBy(item => item.Name);
-            InstallableItems = new ObservableCollection<PackSelectionItem>(allFiles);
-            Task.Run(async () =>
+            InstallableItems = new ObservableCollection<IPackSelectionItem>();
+            var pack = new ObservableCollection<IPackSelectionItem>();
+            foreach (var file in SelectedPack.ContentInfo.Files)
             {
-                await Application.Current.Dispatcher.InvokeAsync(() =>
-                {
-                    foreach (var item in InstallableItems)
-                        item.IsSelected = true;
-                }, System.Windows.Threading.DispatcherPriority.Loaded);
-            }).Await();
-        }
+                PackSelectionHelper.RootWork(file, ref pack);
+            }
+            //Sorting
+            PackSelectionHelper.Sort(ref pack);
 
-        
+            InstallableItems = new ObservableCollection<IPackSelectionItem>(pack);
+        }
     }
 }

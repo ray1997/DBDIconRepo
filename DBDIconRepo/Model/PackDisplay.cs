@@ -65,21 +65,21 @@ namespace DBDIconRepo.Model
             if (install.ShowDialog() == true)
             {
                 //
-                var allInstallSummary = install.ViewModel.InstallableItems.Select(i => i.IsSelected).Distinct();
-                if (allInstallSummary.Count() > 1) //There's true & false?
-                {
-                    //Partial download
-                }
-                else if (allInstallSummary.Count() == 1 && allInstallSummary.First() == true)
-                {
-                    //If all selection is true, just clone repo
-                    IsDownloading = true;
-                    Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
-                        $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
-                        HandleDownloadProgress);
+                //var allInstallSummary = install.ViewModel.InstallableItems.Source.Select(i => i.IsSelected).Distinct();
+                //if (allInstallSummary.Count() > 1) //There's true & false?
+                //{
+                //    //Partial download
+                //}
+                //else if (allInstallSummary.Count() == 1 && allInstallSummary.First() == true)
+                //{
+                //    //If all selection is true, just clone repo
+                //    IsDownloading = true;
+                //    Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
+                //        $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
+                //        HandleDownloadProgress);
 
-                    Messenger.Default.Send(new RequestDownloadRepo(Info), MessageToken.REQUESTDOWNLOADREPOTOKEN);
-                }
+                //    Messenger.Default.Send(new RequestDownloadRepo(Info), MessageToken.REQUESTDOWNLOADREPOTOKEN);
+                //}
             }            
         }
 

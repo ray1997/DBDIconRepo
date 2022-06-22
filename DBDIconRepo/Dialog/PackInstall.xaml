@@ -10,173 +10,15 @@
         ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:local="clr-namespace:DBDIconRepo.Dialog"
         mc:Ignorable="d" Height="480" Width="600">
-    <Window.Resources>
-        <convert:ShowSpecificTextIfNullConverter x:Key="nullToText"/>
-
-        <DataTemplate DataType="{x:Type m:PackSelectionItem}"
-                      x:Key="genericNoInfoItem">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                          Content="{Binding FileName}" VerticalAlignment="Center"/>
-                <Button Grid.Column="1" HorizontalAlignment="Right" Margin="5,0">
-                    <ui:FlyoutService.Flyout>
-                        <ui:Flyout Placement="BottomEdgeAlignedRight">
-                            <Image Width="128" Height="128"/>
-                        </ui:Flyout>
-                    </ui:FlyoutService.Flyout>
-                    <ui:FontIcon Glyph=""/>
-                </Button>
-            </Grid>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type m:PackSelectionItem}"
-                      x:Key="genericItemInfo">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Rectangle Grid.ColumnSpan="3" Fill="Transparent"
-                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                          Content="{Binding Name}" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding FileName}" Margin="5,0" Grid.Column="1" VerticalAlignment="Center" FontSize="12"/>
-                <Button Grid.Column="2" HorizontalAlignment="Right" Margin="5,0">
-                    <ui:FlyoutService.Flyout>
-                        <ui:Flyout Placement="BottomEdgeAlignedRight">
-                            <Image Width="128" Height="128"/>
-                        </ui:Flyout>
-                    </ui:FlyoutService.Flyout>
-                    <ui:FontIcon Glyph=""/>
-                </Button>
-            </Grid>
-        </DataTemplate>
-        <DataTemplate x:Key="perkItemInfo" DataType="{x:Type m:PackSelectionItem}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <CheckBox Margin="0,4,0,0"
-                          VerticalAlignment="Center"
-                          IsChecked="{Binding IsSelected, Mode=TwoWay}">
-                    <CheckBox.Content>
-                        <TextBlock FontSize="10" Margin="0,-6,0,0">
-                            <Run Text="{Binding Name}" FontSize="14"/>
-                            <LineBreak/><Run Text="{Binding Info.PerkOwner, Converter={StaticResource nullToText}, ConverterParameter='General perks'}"/>
-                        </TextBlock>
-                    </CheckBox.Content>
-                </CheckBox>
-                <TextBlock Margin="5,0" Grid.Column="1" FontSize="12"
-                           VerticalAlignment="Center"
-                           Text="{Binding FileName}"/>
-                <Button Grid.Column="2" HorizontalAlignment="Right" Margin="5,0">
-                    <ui:FlyoutService.Flyout>
-                        <ui:Flyout Placement="BottomEdgeAlignedRight">
-                            <Image Width="128" Height="128"/>
-                        </ui:Flyout>
-                    </ui:FlyoutService.Flyout>
-                    <ui:FontIcon Glyph=""/>
-                </Button>
-            </Grid>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type m:PackSelectionItem}"
-                      x:Key="killerPowerInfo">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                          Content="{Binding Name}" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding FileName}" Margin="5,0" 
-                           Grid.Column="1" VerticalAlignment="Center" FontSize="12"/>
-                <Button Grid.Column="2" HorizontalAlignment="Right" Margin="5,0">
-                    <ui:FlyoutService.Flyout>
-                        <ui:Flyout Placement="BottomEdgeAlignedRight">
-                            <Image Width="128" Height="128"/>
-                        </ui:Flyout>
-                    </ui:FlyoutService.Flyout>
-                    <ui:FontIcon Glyph=""/>
-                </Button>
-            </Grid>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type m:PackSelectionItem}"
-                      x:Key="addonsInfo">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <CheckBox Margin="0,4,0,0"
-                          VerticalAlignment="Center"
-                          IsChecked="{Binding IsSelected, Mode=TwoWay}">
-                    <CheckBox.Content>
-                        <TextBlock FontSize="10" Margin="0,-6,0,0">
-                            <Run Text="{Binding Name}" FontSize="14"/>
-                            <LineBreak/>[<Run Text="Survivor Item" FontWeight="Black"/>] <Run Text="{Binding Info.For}"/>
-                        </TextBlock>
-                    </CheckBox.Content>
-                </CheckBox>
-                <TextBlock Margin="5,0" Grid.Column="1" FontSize="12"
-                           VerticalAlignment="Center"
-                           Text="{Binding FileName}"/>
-                <Button Grid.Column="2" HorizontalAlignment="Right" Margin="5,0">
-                    <ui:FlyoutService.Flyout>
-                        <ui:Flyout Placement="BottomEdgeAlignedRight">
-                            <Image Width="128" Height="128"/>
-                        </ui:Flyout>
-                    </ui:FlyoutService.Flyout>
-                    <ui:FontIcon Glyph=""/>
-                </Button>
-            </Grid>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type m:PackSelectionItem}"
-                      x:Key="killerAddonsInfo">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <CheckBox Margin="0,4,0,0"
-                          VerticalAlignment="Center"
-                          IsChecked="{Binding IsSelected, Mode=TwoWay}">
-                    <CheckBox.Content>
-                        <TextBlock FontSize="10" Margin="0,-6,0,0" xml:space="preserve"><Run Text="{Binding Name}" FontSize="14"/><LineBreak/>[<Run FontWeight="Bold" Text="{Binding Info.Owner}"/>] <Run Text="{Binding Info.For}"/></TextBlock>
-                    </CheckBox.Content>
-                </CheckBox>
-                <TextBlock Margin="5,0" Grid.Column="1" FontSize="12"
-                           VerticalAlignment="Center"
-                           Text="{Binding FileName}"/>
-                <Button Grid.Column="2" HorizontalAlignment="Right" Margin="5,0">
-                    <ui:FlyoutService.Flyout>
-                        <ui:Flyout Placement="BottomEdgeAlignedRight">
-                            <Image Width="128" Height="128"/>
-                        </ui:Flyout>
-                    </ui:FlyoutService.Flyout>
-                    <ui:FontIcon Glyph=""/>
-                </Button>
-            </Grid>
-        </DataTemplate>
-        <local:InstallSelectionTemplator x:Key="installSelectionTemplate"
-                                         KillerPowerSelection="{StaticResource killerPowerInfo}"
-                                         ItemAddonsSelection="{StaticResource addonsInfo}"
-                                         KillerPowerAddonsSelection="{StaticResource killerAddonsInfo}"
-                                         PerkItemSelection="{StaticResource perkItemInfo}"
-                                         GenericItemTemplate="{StaticResource genericItemInfo}"
-                                         GenericNoInfoItem="{StaticResource genericNoInfoItem}"/>
-    </Window.Resources>
     <Window.DataContext>
         <vm:PackInstallViewModel x:Name="ViewModel"/>
     </Window.DataContext>
+    <Window.Resources>
+        <convert:ShowSpecificTextIfNullConverter x:Key="nullToText"/>
+        <convert:RevealIfNull x:Key="showIfNull"/>
+        <convert:RevealIfNotNull x:Key="showIfNotNull"/>
+        <convert:InfoSummaryConverter x:Key="infoSummary"/>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -184,15 +26,44 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Text="Select which components to install" FontSize="18" Margin="4,0" FontWeight="Bold"/>
-        <ui:ListView ItemsSource="{Binding InstallableItems, Mode=TwoWay, IsAsync=True}"
-                  ItemTemplateSelector="{StaticResource installSelectionTemplate}"
-                  Margin="4" Padding="8" Grid.Row="1" IsSelectionEnabled="False">
-            <ui:ListView.ItemContainerStyle>
-                <Style TargetType="ui:ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                </Style>
-            </ui:ListView.ItemContainerStyle>
-        </ui:ListView>
+        
+        <TreeView Grid.Row="1" ItemsSource="{Binding InstallableItems}">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFolder}"
+                                          ItemsSource="{Binding Childs}">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
+                            <CheckBox.Content>
+                                <TextBlock>
+                                    <Run Text="{Binding Info.Name}"/> (<Run Text="{Binding Name}"/>)
+                                </TextBlock>
+                            </CheckBox.Content>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Visibility="{Binding Info, Converter={StaticResource showIfNull}}">
+                            <TextBlock Text="{Binding Name}"/>
+                        </CheckBox>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFile}">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
+                            <CheckBox.Content>
+                                <TextBlock>
+                                    <Run Text="{Binding Info, Converter={StaticResource infoSummary}}"/> (<Run Text="{Binding Name}"/>)
+                                </TextBlock>
+                            </CheckBox.Content>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Visibility="{Binding Info, Converter={StaticResource showIfNull}}">
+                            <CheckBox.Content>
+                                <TextBlock Text="{Binding Name}"/>
+                            </CheckBox.Content>
+                        </CheckBox>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>
         
         <Rectangle Grid.Row="2" Fill="{DynamicResource CommandBarBackground}"/>
         <ui:CommandBar Grid.Row="2">
