@@ -66,11 +66,11 @@
         </TreeView>
         
         <Rectangle Grid.Row="2" Fill="{DynamicResource CommandBarBackground}"/>
-        <ui:CommandBar Grid.Row="2">
+        <ui:CommandBar Grid.Row="2" DefaultLabelPosition="Bottom">
             <ui:CommandBar.Content>
-                <ui:CommandBar HorizontalAlignment="Left">
-                    <ui:AppBarButton Label="Select all" Icon="SelectAll"/>
-                    <ui:AppBarButton Label="Select none" Icon="ClearSelection"/>
+                <ui:CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Bottom">
+                    <ui:AppBarButton Label="Select all" Icon="SelectAll" Command="{Binding SelectAll}"/>
+                    <ui:AppBarButton Label="Select none" Icon="ClearSelection" Command="{Binding UnSelectAll}"/>
                     <ui:AppBarSeparator/>
                     <ui:AppBarButton Label="Select..." Icon="List" Click="OpenAttatchedFlyout">
                         <ui:FlyoutBase.AttachedFlyout>
@@ -426,8 +426,8 @@
                     </ui:AppBarButton>
                 </ui:CommandBar>
             </ui:CommandBar.Content>
-            <ui:AppBarButton Label="Confirm install" Icon="Accept"/>
-            <ui:AppBarButton Label="Cancel install" Icon="Cancel"/>
+            <ui:AppBarButton Label="Install" Icon="Accept"/>
+            <ui:AppBarButton Label="Cancel" Icon="Cancel"/>
         </ui:CommandBar>
     </Grid>
 </Window>

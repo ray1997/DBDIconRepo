@@ -15,6 +15,7 @@ namespace DBDIconRepo.Model
         bool? IsExpanded { get; set; }
         IBaseItemInfo? Info { get; set; }
         IPackSelectionItem? Parent { get; }
+        ObservableCollection<IPackSelectionItem>? Childs { get; set; }
     }
 
     public class PackSelectionFolder : ObservableObject, IPackSelectionItem
@@ -111,9 +112,17 @@ namespace DBDIconRepo.Model
             private set => _parent = value;
         }
 
+        ObservableCollection<IPackSelectionItem>? _childs;
+        public ObservableCollection<IPackSelectionItem>? Childs
+        {
+            get => _childs;
+            set => SetProperty(ref _childs, value);
+        }
+
         public PackSelectionFile(IPackSelectionItem? parent)
         {
             IsSelected = true;
+            Childs = null;
             Parent = parent ?? parent;
         }
     }
