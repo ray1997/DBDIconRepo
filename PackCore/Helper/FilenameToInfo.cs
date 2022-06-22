@@ -1312,5 +1312,65 @@ namespace IconPack.Helper
                 return PowerAddons[path];
             return null;
         }
+
+        public static string GetMainFoldersName(string folder) => folder switch
+        {
+            "CharPortraits" => "Character Portraits",
+            "DailyRituals" => "Daily Rituals",
+            "Favors" => "Offerings",
+            "HelpLoading" => "Loading Screen Tips",
+            "ItemAddons" => "Addons",
+            "items" => "Survivor Items",
+            "Packs" => "Auric Pack",
+            "Powers" => "Killer Powers",
+            "StatusEffects" => "Status Effects",
+            //Most folder name is already clear what it's for
+            _ => folder,
+        };
+
+        public static string? GetSubfolderAsChapterName(params string[] folders)
+        {
+            if (folders is null)
+                return null;
+            if (folders.Length < 1)
+                return null;
+            switch (folders[1])
+            {
+                case "Ash": return "Ash vs Evil Dead";
+                case "Aurora": return "Binding of Kins";
+                case "Cannibal": return "LEATHERFACE™";
+                case "Comet": return "All-Kill";
+                case "dlc2":
+                case "DLC2": return "The HALLOWEEN®️ Chapter";
+                case "dlc3":
+                case "DLC3": return "Of Flesh and Mud";
+                case "dlc4":
+                case "DLC4": return "Spark of Madness";
+                case "dlc5":
+                case "DLC5": return "A Lullaby for the Dark";
+                case "Eclipse": return "Resident Evil™️";
+                case "England": return "A Nightmare on Elm Street™️";
+                case "Finland": return "The SAW™️ Chapter";
+                case "Gemini": return "Hellraiser™️";
+                case "Kate":
+                case "Guam": return "Curtain Call";
+                case "Haiti": return "Shattered Bloodline";
+                case "Hubble": return "Hour of the Witch";
+                case "Ion": return "Portrait of a Murder";
+                case "Kenya": return "Darkness Among Us";
+                case "Kepler": return "Sadako Rising";
+                case "L4D": return "Left Behind";
+                case "Mali": return "Demise of the Faithful";
+                case "Meteor": return "Roots of Dread";
+                case "Oman": return "Ghost Face®️";
+                case "Qatar": return "Stranger Things";
+                case "Sweden": return "Cursed Legacy";
+                case "Ukraine": return "Chains of Hate";
+                case "Wales": return "Silent Hill";
+                case "Yemen": return "Descend Beyond";
+                case "Xipre": return "The Hillbilly Rework";
+                default: return null;
+            }
+        }
     }
 }
