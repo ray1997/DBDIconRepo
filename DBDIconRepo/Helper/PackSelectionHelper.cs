@@ -109,6 +109,7 @@ namespace DBDIconRepo.Helper
                         new GenericItemInfo(PackInfo.Offerings[fullpath]);
                 case "ItemAddons":
                     roots.Reverse();
+                    roots.Add(name);
                     return PackInfo.GetItemAddonsInfo(string.Join('/', roots));
                 case "items":
                     return !PackInfo.Items.ContainsKey(name) ? null :
