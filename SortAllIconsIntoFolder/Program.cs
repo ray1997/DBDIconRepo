@@ -11,7 +11,7 @@ Dictionary<string, List<string>> PerkFolder = new()
     { "Eclipse", new List<string>() { "iconPerks_BiteTheBullet", "iconPerks_blastMine", "iconPerks_Counterforce", "iconPerks_eruption", "iconPerks_Flashbang", "iconPerks_hysteria", "iconPerks_lethalPursuer", "iconPerks_Resurgence", "iconPerks_RookieSpirit" } },
     { "England", new List<string>() { "iconPerks_bloodWarden", "iconPerks_fireUp", "iconPerks_pharmacy", "iconPerks_rememberMe", "iconPerks_vigil", "iconPerks_wakeUp" } },
     { "Finland", new List<string>() { "iconPerks_detectivesHunch", "iconPerks_hangmansTrick", "iconPerks_makeYourChoice", "iconPerks_stakeOut", "iconPerks_surveillance", "iconPerks_tenacity" } },
-    { "Gamini", new List<string>() { "iconPerks_Deadlock", "iconPerks_HexPlaything", "iconPerks_ScourgeHookGiftOfPain" } },
+    { "Gemini", new List<string>() { "iconPerks_Deadlock", "iconPerks_HexPlaything", "iconPerks_ScourgeHookGiftOfPain" } },
     { "Guam", new List<string>() { "iconPerks_bamboozle", "iconPerks_coulrophobia", "iconPerks_popGoesTheWeasel" } },
     { "Haiti", new List<string>() { "iconPerks_autodidact", "iconPerks_deliverance", "iconPerks_diversion", "iconPerks_hatred", "iconPerks_hauntedGround", "iconPerks_spiritFury" } },
     { "Hubble", new List<string>() { "iconPerks_BoonCircleOfHealing", "iconPerks_BoonShadowStep", "iconPerks_Clairvoyance" } },
