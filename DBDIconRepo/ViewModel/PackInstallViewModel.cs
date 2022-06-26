@@ -28,9 +28,17 @@ namespace DBDIconRepo.ViewModel
             set => SetProperty(ref _selections, value);
         }
 
+        ObservableCollection<SelectionMenuItem> _menu;
+        public ObservableCollection<SelectionMenuItem> Menu
+        {
+            get => _menu;
+            set => SetProperty(ref _menu, value);
+        }
+
         public ICommand? InstallPack { get; private set; }
         public ICommand? SelectAll { get; private set; }
         public ICommand? UnSelectAll { get; private set; }
+        public ICommand? SelectSpecifics { get; private set; }
         public PackInstallViewModel() { }
         public PackInstallViewModel(Pack? selected)
         {
@@ -48,6 +56,11 @@ namespace DBDIconRepo.ViewModel
             PackSelectionHelper.Sort(ref pack);
 
             InstallableItems = new ObservableCollection<IPackSelectionItem>(pack);
+
+            //Load selection menu helper
+            Menu = new ObservableCollection<SelectionMenuItem>();
+            //Load from Json somehow
+
         }
 
         private void SetAllItems(bool state)
