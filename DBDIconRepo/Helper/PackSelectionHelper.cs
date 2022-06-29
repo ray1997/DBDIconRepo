@@ -10,123 +10,49 @@ namespace DBDIconRepo.Helper
 {
     public static class PackSelectionHelper
     {
-        public static void RootWork(string path, ref ObservableCollection<IPackSelectionItem> collection)
+        public static IBaseItemInfo? GetItemInfo(string path)
         {
-            if (path.Contains('\\'))
-                path = path.Replace('\\', '/');
-            List<string> paths = path.Split('/', StringSplitOptions.RemoveEmptyEntries).ToList();
-            if (collection is null)
-                collection = new ObservableCollection<IPackSelectionItem>();
-            var item = collection.FirstOrDefault(item => item.Name == paths[0]);
-            if (item is null)
+            try
             {
-                string? folderName = PackInfo.GetMainFoldersName(paths[0]);
-                collection.Add(new PackSelectionFolder()
-                {
-                    Name = paths[0],
-                    Info = folderName == paths[0] ? null :
-                    new GenericItemInfo(folderName),
-                });
-                var newItem = collection.FirstOrDefault(i => i.Name == paths[0]);
-                int index = collection.IndexOf(newItem);
-                collection[index] = Traverse(collection[index], paths.Skip(1).ToList());
-            }
-            else
-            {
-                int index = collection.IndexOf(item);
-                collection[index] = Traverse(collection[index], paths.Skip(1).ToList());
-            }
-        }
-
-        private static IPackSelectionItem Traverse(IPackSelectionItem? root, List<string> paths)
-        {
-            if (paths.Count < 1)
-                return root;
-            if (!paths[0].EndsWith(".png"))
-            {
-                //Folder
-                //Check if it's already exist
-                IPackSelectionItem item = (root as PackSelectionFolder).Childs.FirstOrDefault(i => i.Name == paths[0]);
-                if (item is null)
-                {
-                    //Add new child
-                    string? hasInfoName = PackInfo.GetSubfolderAsChapterName(root.Name, paths[0]);
-                    (root as PackSelectionFolder).Childs.Add(new PackSelectionFolder(root)
-                    {
-                        Name = paths[0],
-                        Info = hasInfoName is null ? null :
-                        new GenericItemInfo(hasInfoName)
-                    });
-                    var newItem = (root as PackSelectionFolder).Childs.FirstOrDefault(i => i.Name == paths[0]);
-                    int index = (root as PackSelectionFolder).Childs.IndexOf(newItem);
-                    (root as PackSelectionFolder).Childs[index] = Traverse((root as PackSelectionFolder).Childs[index], paths.Skip(1).ToList());
-                    return root;
-                }
+                if (path.StartsWith("CharPortraits"))
+                    return new GenericItemInfo(PackInfo.Portraits[GetPathWithoutExtension(path)]);
+                //PackInfo.Emblems
+                else if (path.StartsWith("DailyRituals"))
+                    return new GenericItemInfo(PackInfo.DailyRituals[GetPathWithoutExtension(path)]);
+                else if (path.StartsWith("Emblems"))
+                    return new GenericItemInfo(PackInfo.Emblems[GetPathWithoutExtension(path)]);
+                else if (path.StartsWith("Favors"))
+                    return new GenericItemInfo(PackInfo.Offerings[GetPathWithoutExtension(path)]);
+                else if (path.StartsWith("ItemAddons"))
+                    return PackInfo.GetItemAddonsInfo(path);
+                else if (path.StartsWith("Items"))
+                    return new GenericItemInfo(PackInfo.Items[GetPathWithoutExtension(path)]);
+                else if (path.StartsWith("Powers"))
+                    return PackInfo.Powers[GetPathWithoutExtension(path)];
+                else if (path.StartsWith("Perks"))
+                    return PackInfo.Perks[GetPathWithoutExtension(path)];
+                else if (path.StartsWith("StatusEffects"))
+                    return new GenericItemInfo(PackInfo.StatusEffects[GetPathWithoutExtension(path)]);
                 else
-                {
-                    int index = (root as PackSelectionFolder).Childs.IndexOf(item);
-                    (root as PackSelectionFolder).Childs[index] = Traverse((root as PackSelectionFolder).Childs[index], paths.Skip(1).ToList());
-                    return root;
-                }
+                    return null;
             }
-            else
+            catch (Exception ex)
             {
-                //File
-                (root as PackSelectionFolder).Childs.Add(new PackSelectionFile(root)
-                {
-                    Name = paths[0],
-                    Info = GetInfo(root, paths[0]),
-                    IsSelected = true
-                });
-                return root;
+                return null;
             }
-            return root;
         }
 
-        private static IBaseItemInfo? GetInfo(IPackSelectionItem root, string name)
+        public static string GetPathWithoutExtension(string path)
         {
-            List<string> roots = new();
-            IPackSelectionItem? traverseBack = root;
-            while (traverseBack.Parent != null)
-            {
-                roots.Add(traverseBack.Name);
-                traverseBack = traverseBack.Parent;
-            }
-            if (traverseBack.Parent is null)
-                roots.Add(traverseBack.Name);
-            if (name.EndsWith(".png"))
-                name = name.Replace(".png", "");
-            switch (roots.LastOrDefault())
-            {
-                case "CharPortraits":
-                    return !PackInfo.Portraits.ContainsKey(name) ? null :
-                        new GenericItemInfo(PackInfo.Portraits[name]);
-                case "Favors":
-                    roots.Reverse();
-                    roots.Add(name);
-                    string fullpath = string.Join('/', roots);
-                    return !PackInfo.Offerings.ContainsKey(fullpath) ? null :
-                        new GenericItemInfo(PackInfo.Offerings[fullpath]);
-                case "ItemAddons":
-                    roots.Reverse();
-                    roots.Add(name);
-                    return PackInfo.GetItemAddonsInfo(string.Join('/', roots));
-                case "items":
-                    return !PackInfo.Items.ContainsKey(name) ? null :
-                        new GenericItemInfo(PackInfo.Items[name]);
-                case "Perks": 
-                    return !PackInfo.Perks.ContainsKey(name) ? null : 
-                        PackInfo.Perks[name];
-                case "Powers":
-                    return !PackInfo.Powers.ContainsKey(name) ? null : 
-                        PackInfo.Powers[name];
-                case "StatusEffects":
-                    return !PackInfo.StatusEffects.ContainsKey(name) ? null : 
-                        new GenericItemInfo(PackInfo.StatusEffects[name]);
-                default: return null;
-            }
+            //Take last part from / and remove .png
+            ReadOnlySpan<char> split = path;
+            int firstSplit = split.LastIndexOf('/') + 1;
+            int lastSplit = split.LastIndexOf('.');
+            int splitLength = lastSplit - firstSplit;
+            return split.Slice(firstSplit, splitLength).ToString();
         }
 
+        /*
         public static void Sort(ref ObservableCollection<IPackSelectionItem> collection)
         {
             //Sort root
@@ -221,5 +147,6 @@ namespace DBDIconRepo.Helper
                 return i.Info.Name;
             return null;
         }
+        */
     }
 }

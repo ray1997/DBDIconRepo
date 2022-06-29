@@ -26,14 +26,36 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Text="Select which components to install" FontSize="18" Margin="4,0" FontWeight="Bold"/>
-        
-        <TreeView Grid.Row="1" ItemsSource="{Binding InstallableItems}">
-            <!-- Expand all items by default, but cause app to froze quite a while -->
+
+        <ui:ListView Grid.Row="1" ItemsSource="{Binding InstallableItems}" IsSelectionEnabled="False">
+            <ui:ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
+                            <CheckBox.Content>
+                                <TextBlock>
+                                    <Run Text="{Binding Info, Converter={StaticResource infoSummary}}"/> (<Run Text="{Binding Name}"/>)
+                                </TextBlock>
+                            </CheckBox.Content>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Visibility="{Binding Info, Converter={StaticResource showIfNull}}">
+                            <CheckBox.Content>
+                                <TextBlock Text="{Binding Name}"/>
+                            </CheckBox.Content>
+                        </CheckBox>
+                    </StackPanel>
+                </DataTemplate>
+            </ui:ListView.ItemTemplate>
+        </ui:ListView>
+        <!--<TreeView Grid.Row="1" ItemsSource="{Binding InstallableItems}">
+            --><!-- Expand all items by default, but cause app to froze quite a while -->
             <!--<TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem" BasedOn="{StaticResource DefaultTreeViewItemStyle}">
                     <Setter Property="TreeViewItem.IsExpanded" Value="True"/>
                 </Style>
-            </TreeView.ItemContainerStyle>-->
+            </TreeView.ItemContainerStyle>--><!--
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFolder}"
                                           ItemsSource="{Binding Childs}">
@@ -63,7 +85,7 @@
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
-        </TreeView>
+        </TreeView>-->
         
         <Rectangle Grid.Row="2" Fill="{DynamicResource CommandBarBackground}"/>
         <ui:CommandBar Grid.Row="2" DefaultLabelPosition="Bottom">

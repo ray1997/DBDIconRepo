@@ -10,71 +10,24 @@ namespace DBDIconRepo.Model
 {
     public interface IPackSelectionItem
     {
+        string? FullPath { get; set; }
         string? Name { get; set; }
         bool? IsSelected { get; set; }
-        bool? IsExpanded { get; set; }
         IBaseItemInfo? Info { get; set; }
-        IPackSelectionItem? Parent { get; }
-        ObservableCollection<IPackSelectionItem>? Childs { get; set; }
-    }
-
-    public class PackSelectionFolder : ObservableObject, IPackSelectionItem
-    {
-        string? _name;
-        /// <summary>
-        /// Folder root name
-        /// </summary>
-        public string? Name
-        {
-            get => _name;
-            set => SetProperty(ref _name, value);
-        }
-
-        public bool? IsExpanded
-        {
-            get => true;
-            set { }
-        }
-
-        public bool? IsSelected { get; set; }
-
-        IBaseItemInfo? _info;
-        public IBaseItemInfo? Info
-        {
-            get => _info;
-            set => SetProperty(ref _info, value);
-        }
-
-        ObservableCollection<IPackSelectionItem>? _childs;
-        public ObservableCollection<IPackSelectionItem>? Childs
-        {
-            get => _childs;
-            set => SetProperty(ref _childs, value);
-        }
-
-        IPackSelectionItem? _parent;
-        public IPackSelectionItem? Parent
-        {
-            get
-            {
-                return _parent;
-            }
-            private set
-            {
-                _parent = value;
-            }
-        }
-
-        public PackSelectionFolder(IPackSelectionItem? parent = null)
-        {
-            Childs = new ObservableCollection<IPackSelectionItem>();
-            Info = null;
-            Parent = parent ?? parent;
-        }
     }
 
     public class PackSelectionFile : ObservableObject, IPackSelectionItem
     {
+        string? _fullPath;
+        /// <summary>
+        /// Filename
+        /// </summary>
+        public string? FullPath
+        {
+            get => _fullPath;
+            set => SetProperty(ref _fullPath, value);
+        }
+
         string? _name;
         /// <summary>
         /// Filename
@@ -92,12 +45,6 @@ namespace DBDIconRepo.Model
             set => SetProperty(ref _selected, value);
         }
 
-        public bool? IsExpanded
-        {
-            get => false;
-            set { }
-        }
-
         IBaseItemInfo? _info;
         public IBaseItemInfo? Info
         {
@@ -105,25 +52,17 @@ namespace DBDIconRepo.Model
             set => SetProperty(ref _info, value);
         }
 
-        IPackSelectionItem? _parent;
-        public IPackSelectionItem? Parent
-        {
-            get => _parent;
-            private set => _parent = value;
-        }
-
-        ObservableCollection<IPackSelectionItem>? _childs;
-        public ObservableCollection<IPackSelectionItem>? Childs
-        {
-            get => _childs;
-            set => SetProperty(ref _childs, value);
-        }
-
-        public PackSelectionFile(IPackSelectionItem? parent)
+        public PackSelectionFile()
         {
             IsSelected = true;
-            Childs = null;
-            Parent = parent ?? parent;
+        }
+
+        public PackSelectionFile(string path)
+        {
+            FullPath = path;
+            Name = path.Split('/', System.StringSplitOptions.RemoveEmptyEntries).Last().Replace(".png", "");
+            IsSelected = true;
+            Info = PackSelectionHelper.GetItemInfo(path);
         }
     }
 }

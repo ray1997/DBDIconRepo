@@ -46,17 +46,8 @@ namespace DBDIconRepo.ViewModel
             UnSelectAll = new RelayCommand<RoutedEventArgs>(UnSelectAllAction);
 
             SelectedPack = selected;
-            InstallableItems = new ObservableCollection<IPackSelectionItem>();
-            var pack = new ObservableCollection<IPackSelectionItem>();
-            foreach (var file in SelectedPack.ContentInfo.Files)
-            {
-                PackSelectionHelper.RootWork(file, ref pack);
-            }
-            //Sorting
-            PackSelectionHelper.Sort(ref pack);
-
-            InstallableItems = new ObservableCollection<IPackSelectionItem>(pack);
-
+            InstallableItems = new ObservableCollection<IPackSelectionItem>(selected.ContentInfo.Files.Select(path => new PackSelectionFile(path)));
+                        
             //Load selection menu helper
             Menu = new ObservableCollection<SelectionMenuItem>();
             //Load from Json somehow
@@ -67,20 +58,6 @@ namespace DBDIconRepo.ViewModel
         {
             foreach (var item in InstallableItems)
             {
-                if (item.Childs is not null)
-                {
-                    foreach (var subItem in item.Childs)
-                    {
-                        if (subItem.Childs is not null)
-                        {
-                            foreach (var subSubItem in subItem.Childs)
-                            {
-                                subSubItem.IsSelected = state;
-                            }
-                        }
-                        subItem.IsSelected = state;
-                    }
-                }    
                 item.IsSelected = state;
             }
         }
