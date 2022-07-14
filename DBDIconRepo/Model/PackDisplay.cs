@@ -64,22 +64,26 @@ namespace DBDIconRepo.Model
             PackInstall install = new(Info);
             if (install.ShowDialog() == true)
             {
-                //
-                //var allInstallSummary = install.ViewModel.InstallableItems.Source.Select(i => i.IsSelected).Distinct();
-                //if (allInstallSummary.Count() > 1) //There's true & false?
-                //{
-                //    //Partial download
-                //}
-                //else if (allInstallSummary.Count() == 1 && allInstallSummary.First() == true)
-                //{
-                //    //If all selection is true, just clone repo
-                //    IsDownloading = true;
-                //    Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
-                //        $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
-                //        HandleDownloadProgress);
+                var installPick = install.ViewModel.InstallableItems;
 
-                //    Messenger.Default.Send(new RequestDownloadRepo(Info), MessageToken.REQUESTDOWNLOADREPOTOKEN);
-                //}
+                bool result = DownloadSomeOrAllConsultant.ShouldCloneOrNot(installPick);
+
+                if (result)
+                {
+                    //Clone
+                    //Show download progress
+                    IsDownloading = true;
+                    //Register for download progress
+                    Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
+                        $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
+                        HandleDownloadProgress);
+                    //Actually ask to start download
+                    Messenger.Default.Send(new RequestDownloadRepo(Info), MessageToken.REQUESTDOWNLOADREPOTOKEN);
+                }
+                else
+                {
+                    GitAbuse.DownloadIndivisualItems(installPick, Info);
+                }
             }            
         }
 

@@ -116,8 +116,8 @@
                     </ui:AppBarButton>-->
                 </ui:CommandBar>
             </ui:CommandBar.Content>
-            <ui:AppBarButton Label="Install" Icon="Accept"/>
-            <ui:AppBarButton Label="Cancel" Icon="Cancel"/>
+            <ui:AppBarButton Label="Install" Icon="Accept" Click="ReplyInstall"/>
+            <ui:AppBarButton Label="Cancel" Icon="Cancel" Click="ReplayCancel"/>
         </ui:CommandBar>
     </Grid>
 </Window>

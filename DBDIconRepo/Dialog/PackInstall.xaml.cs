@@ -25,5 +25,17 @@ namespace DBDIconRepo.Dialog
         {
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
+
+        private void ReplyInstall(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            this.Close();
+        }
+
+        private void ReplyCancel(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            this.Close();
+        }
     }
 }

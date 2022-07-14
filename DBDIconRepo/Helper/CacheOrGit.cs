@@ -164,8 +164,17 @@ namespace DBDIconRepo.Helper
             else
             {
                 DirectoryInfo dir = new(repoCachedFolder);
+                int count = dir.GetFiles("*", SearchOption.AllDirectories).Count();
                 long size = dir.GetFiles("*", SearchOption.AllDirectories)
                     .Select(file => file.Length).Sum();
+
+                if (count >= 1)
+                {
+                    //Remove everything in its
+                    dir.Delete();
+                    Directory.CreateDirectory(repoCachedFolder);
+                }
+
                 if (size >= repo.Size)
                 {
                     //Already downloaded
@@ -195,11 +204,6 @@ namespace DBDIconRepo.Helper
                             $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN + repo.Name}");
                     });
                     return;
-                }
-                else
-                {
-                    dir.Delete();
-                    Directory.CreateDirectory(repoCachedFolder);
                 }
             }
 
