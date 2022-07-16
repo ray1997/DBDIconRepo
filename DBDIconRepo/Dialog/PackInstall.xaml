@@ -1,0 +1,123 @@
+﻿<Window x:Class="DBDIconRepo.Dialog.PackInstall"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:m="clr-namespace:DBDIconRepo.Model"
+        xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
+        xmlns:convert="clr-namespace:DBDIconRepo.Converters"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        xmlns:local="clr-namespace:DBDIconRepo.Dialog"
+        mc:Ignorable="d" Height="480" Width="600">
+    <Window.DataContext>
+        <vm:PackInstallViewModel x:Name="ViewModel"/>
+    </Window.DataContext>
+    <Window.Resources>
+        <convert:ShowSpecificTextIfNullConverter x:Key="nullToText"/>
+        <convert:RevealIfNull x:Key="showIfNull"/>
+        <convert:RevealIfNotNull x:Key="showIfNotNull"/>
+        <convert:InfoSummaryConverter x:Key="infoSummary"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Select which components to install" FontSize="18" Margin="4,0" FontWeight="Bold"/>
+
+        <ui:ListView Grid.Row="1" ItemsSource="{Binding InstallableItems}" IsSelectionEnabled="False">
+            <ui:ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
+                            <CheckBox.Content>
+                                <TextBlock>
+                                    <Run Text="{Binding Info, Converter={StaticResource infoSummary}}"/> (<Run Text="{Binding Name}"/>)
+                                </TextBlock>
+                            </CheckBox.Content>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Visibility="{Binding Info, Converter={StaticResource showIfNull}}">
+                            <CheckBox.Content>
+                                <TextBlock Text="{Binding Name}"/>
+                            </CheckBox.Content>
+                        </CheckBox>
+                    </StackPanel>
+                </DataTemplate>
+            </ui:ListView.ItemTemplate>
+        </ui:ListView>
+        <!--<TreeView Grid.Row="1" ItemsSource="{Binding InstallableItems}">
+            --><!-- Expand all items by default, but cause app to froze quite a while -->
+            <!--<TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem" BasedOn="{StaticResource DefaultTreeViewItemStyle}">
+                    <Setter Property="TreeViewItem.IsExpanded" Value="True"/>
+                </Style>
+            </TreeView.ItemContainerStyle>--><!--
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFolder}"
+                                          ItemsSource="{Binding Childs}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
+                            <Run Text="{Binding Info.Name}"/> (<Run Text="{Binding Name}"/>)
+                        </TextBlock>
+                        <TextBlock Text="{Binding Name}" Visibility="{Binding Info, Converter={StaticResource showIfNull}}"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFile}">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
+                            <CheckBox.Content>
+                                <TextBlock>
+                                    <Run Text="{Binding Info, Converter={StaticResource infoSummary}}"/> (<Run Text="{Binding Name}"/>)
+                                </TextBlock>
+                            </CheckBox.Content>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Visibility="{Binding Info, Converter={StaticResource showIfNull}}">
+                            <CheckBox.Content>
+                                <TextBlock Text="{Binding Name}"/>
+                            </CheckBox.Content>
+                        </CheckBox>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>-->
+        
+        <Rectangle Grid.Row="2" Fill="{DynamicResource CommandBarBackground}"/>
+        <ui:CommandBar Grid.Row="2" DefaultLabelPosition="Bottom">
+            <ui:CommandBar.Content>
+                <ui:CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Bottom">
+                    <ui:AppBarButton Label="Select all" Icon="SelectAll" Command="{Binding SelectAll}"/>
+                    <ui:AppBarButton Label="Select none" Icon="ClearSelection" Command="{Binding UnSelectAll}"/>
+                    <!-- TODO: Selection helper, with dynamic menu. Loading menu list from git -->
+                    <!--<ui:AppBarSeparator/>
+                    <ui:AppBarButton Label="Selection..." Icon="List" Click="OpenAttatchedFlyout">
+                        <ui:FlyoutBase.AttachedFlyout>
+                            <ui:MenuFlyout x:Name="selectMenuFlyout">
+                                <ui:MenuFlyout.MenuFlyoutPresenterStyle>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource DefaultMenuItemStyle}">
+                                        <Setter Property="Header" Value="{Binding Name}"/>
+                                        <Setter Property="Icon">
+                                            <Setter.Value>
+                                                <ui:FontIcon Glyph="{Binding Icon}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter Property="CommandParameter" Value="{Binding SelectionRecommended}"/>
+                                        <Setter Property="ItemsSource" Value="{Binding Childs}"/>
+                                    </Style>
+                                </ui:MenuFlyout.MenuFlyoutPresenterStyle>
+                                <MenuItem ItemsSource="{Binding Menu}"/>
+                            </ui:MenuFlyout>
+                        </ui:FlyoutBase.AttachedFlyout>
+                    </ui:AppBarButton>-->
+                </ui:CommandBar>
+            </ui:CommandBar.Content>
+            <ui:AppBarButton Label="Install" Icon="Accept" Click="ReplyInstall"/>
+            <ui:AppBarButton Label="Cancel" Icon="Cancel" Click="ReplyCancel"/>
+        </ui:CommandBar>
+    </Grid>
+</Window>

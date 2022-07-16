@@ -76,6 +76,21 @@ namespace DBDIconRepo.Model
             set => Set(ref _sortAscending, value);
         }
 
+        bool _abuseGitOrDont = false;
+        public bool AlwaysClonePackRepo
+        {
+            get => _abuseGitOrDont;
+            set => Set(ref _abuseGitOrDont, value);
+        }
+
+        double _notDownloadThreshold = 0.2d;
+        public double DownloadIfSelectMoreThanMeThreshold
+        {
+            get => _notDownloadThreshold;
+            set => Set(ref _notDownloadThreshold, value);
+        }
+
+
         #region Messenger manager
         [JsonIgnore]
         private static bool ShouldSendMessageOnChange = false;

@@ -61,6 +61,8 @@ namespace DBDIconRepo
         {
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
+
+        
     }
 
     public class IconPreviewTemplateSelector : DataTemplateSelector

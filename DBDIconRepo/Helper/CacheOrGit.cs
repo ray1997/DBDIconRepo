@@ -19,8 +19,9 @@ namespace DBDIconRepo.Helper
     {
         private const string CachedFolderName = "Cache";
         private const string CachedDisplayName = "Display";
+        private static GitHubClient client => Service.OctokitService.Instance.GitHubClientInstance;
 
-        public static async Task<Pack?> GetPack(GitHubClient client, Repository repo)
+        public static async Task<Pack?> GetPack(Repository repo)
         {
             //Directory
             string cachedRoot = GetDisplayContentPath(repo.Owner.Login, repo.Name);
@@ -89,7 +90,7 @@ namespace DBDIconRepo.Helper
             }
         }
 
-        public static async Task GatherPackDisplayData(GitHubClient client, Repository repo, Pack? requested, string[] requestedPreview)
+        public static async Task GatherPackDisplayData(Repository repo, Pack? requested, string[] requestedPreview)
         {
             //Directory
             string cachedRoot = GetDisplayContentPath(repo.Owner.Login, repo.Name);
@@ -138,6 +139,31 @@ namespace DBDIconRepo.Helper
             }
         }
 
+        public static async Task<bool> DownloadItem(Pack? info, string path)
+        {
+            bool isExistOnGit = await URL.IsContentExists(info.Repository, path);
+            if (!isExistOnGit)
+                return false;
+
+            //Download
+            string localFile = GetPackDownloadPath(info.Repository.Owner, info.Repository.Name);
+            if (path.Contains('/'))
+                localFile += (path.StartsWith('/') ? "" : '\\') + path.Replace('/', '\\');
+            else
+                localFile += (path.StartsWith('\\') ? "" : '\\') + path;
+
+            if (!File.Exists(path))
+            {
+                //Download
+                var icon = await client.Repository.Content.GetRawContent(info.Repository.Owner, info.Repository.Name, path);
+                using FileStream fs = new(localFile, System.IO.FileMode.Create, FileAccess.Write);
+                fs.Write(icon, 0, icon.Length);
+                return true;
+            }
+            else
+                return true;
+        }
+
         public static string GetDisplayContentPath(string owner, string name)
         {
             string path = $"{Environment.CurrentDirectory}\\{CachedFolderName}\\{CachedDisplayName}\\" +
@@ -147,10 +173,24 @@ namespace DBDIconRepo.Helper
             return path;
         }
 
+        public static string GetContentPath(string owner, string name, string filePath)
+        {
+            return $"{Environment.CurrentDirectory}\\{CachedFolderName}\\" + 
+                $"{owner}\\{name}{(filePath.StartsWith('/') ? string.Empty : '\\')}{filePath.Replace('/', '\\')}";
+        }
+
+        public static string GetPackDownloadPath(string owner, string name)
+        {
+            string path = $"{Environment.CurrentDirectory}\\{CachedFolderName}\\" +
+                $"{owner}\\{name}";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
 
         //TODO:Deal with other pack type (Portrait, etc)
         private static Throttler _throttler = new(250);
-        public static async Task DownloadPack(GitHubClient client, Repository repo, Pack pack)
+        public static async Task DownloadPack(Repository repo, Pack pack)
         {
             string repoCachedFolder = $"{Environment.CurrentDirectory}\\{CachedFolderName}\\{repo.Owner.Login}\\{repo.Name}";
 
@@ -160,25 +200,60 @@ namespace DBDIconRepo.Helper
             if (!Directory.Exists(repoCachedFolder))
             {
                 Directory.CreateDirectory(repoCachedFolder);
+                //Start new download
+                //pull from remote
+                try
+                {
+                    Task.Run(() =>
+                    {
+                        LibGit2Sharp.Repository.Clone(pack.Repository.CloneUrl, repoCachedFolder, new LibGit2Sharp.CloneOptions()
+                        {
+                            CredentialsProvider = (_url, _user, _cred) => GetCredential(user.Login, token),
+                            OnProgress = (progress) => ReportServerProgress(repo.Name, progress),
+                            OnTransferProgress = (transfer) => ReportTransferProgress(repo.Name, transfer),
+                            OnCheckoutProgress = (path, complete, total) => ReportCheckoutProgress(repo.Name, path, complete, total),
+                            IsBare = false
+                        });
+                    }).Await();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Clone error!: {(ex is null ? "Unknown" : ex.Message)}");
+                }
             }
             else
             {
                 DirectoryInfo dir = new(repoCachedFolder);
+                int count = dir.GetFiles("*", SearchOption.AllDirectories).Count();
                 long size = dir.GetFiles("*", SearchOption.AllDirectories)
                     .Select(file => file.Length).Sum();
-                if (size >= repo.Size)
+
+
+                //Get a latest commit date on both local and remote
+                DateTime localLatestCommit = DateTime.MinValue;
+                using (var localRepo = new LibGit2Sharp.Repository(repoCachedFolder))
                 {
-                    //Already downloaded
-                    //Check for change if it's older than 1 day
-                    //otherwise, just say it's already downloaded 
-                    //these icon pack definitely not update more than once in just one day right???
-                    if ((DateTime.UtcNow + TimeSpan.FromDays(1)) >= dir.LastWriteTimeUtc)
-                    {
-                        //Say it's done downloading
-                        Messenger.Default.Send(new DownloadRepoProgressReportMessage(DownloadState.Done, 1d),
-                            $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN + repo.Name}");
-                        return;
-                    }
+                    var latestCommit = localRepo.Commits.First();
+                    localLatestCommit = latestCommit.Author.When.UtcDateTime;
+                }
+
+                //Geta latest commit date on remote
+                DateTime remoteLatestCommit = DateTime.MinValue;
+
+                var branches = await client.Repository.Branch.GetAll(repo.Id);
+                var commit = await client.Repository.Commit.Get(repo.Id, branches.First().Commit.Sha);
+                remoteLatestCommit = commit.Commit.Author.Date.UtcDateTime;
+
+                if (localLatestCommit == remoteLatestCommit) //All downloaded and no new change?
+                {
+                    //Say it's done downloading
+                    Messenger.Default.Send(new DownloadRepoProgressReportMessage(DownloadState.Done, 1d),
+                        $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN + repo.Name}");
+                }
+                else
+                {
+                    //New change on remote?
+                    //Force reset folder
                     Task.Run(() =>
                     {
                         //Fetch change from remote
@@ -196,31 +271,6 @@ namespace DBDIconRepo.Helper
                     });
                     return;
                 }
-                else
-                {
-                    dir.Delete();
-                    Directory.CreateDirectory(repoCachedFolder);
-                }
-            }
-
-            //pull from remote
-            try
-            {
-                Task.Run(() =>
-                {
-                    LibGit2Sharp.Repository.Clone(pack.Repository.CloneUrl, repoCachedFolder, new LibGit2Sharp.CloneOptions()
-                    {
-                        CredentialsProvider = (_url, _user, _cred) => GetCredential(user.Login, token),
-                        OnProgress = (progress) => ReportServerProgress(repo.Name, progress),
-                        OnTransferProgress = (transfer) => ReportTransferProgress(repo.Name, transfer),
-                        OnCheckoutProgress = (path, complete, total) => ReportCheckoutProgress(repo.Name, path, complete, total),
-                        IsBare = false
-                    });
-                }).Await();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Clone error!: {(ex is null ? "Unknown" : ex.Message)}");
             }
         }
 
