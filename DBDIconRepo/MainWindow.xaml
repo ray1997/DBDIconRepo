@@ -18,6 +18,8 @@
         <convert:NullableStringPropertyDisplayConverter x:Key="propertyDisplay"/>
         <convert:SortOptionToBool x:Key="sortOptionToBool"/>
         <convert:URLtoAbsoluteURI x:Key="url2bitmapuri"/>
+        <convert:PackStateToVisibility x:Key="packStateToVisibility"/>
+        <convert:PackStateToGridLength x:Key="packStateToGridLength"/>
         <system:Boolean x:Key="BTrue">True</system:Boolean>
         <system:Boolean x:Key="BFalse">False</system:Boolean>
         <DataTemplate x:Key="IconPackIconDisplay">
@@ -216,15 +218,17 @@
                               Margin="5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="{Binding IsDownloading, Mode=OneWay, Converter={StaticResource boolToExpandGridLength}}"/>
+                                <!-- Separator -->
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToGridLength}}"/>
                             </Grid.ColumnDefinitions>
+                            <!-- Normal state -->
                             <Button ToolTipService.ToolTip="Install" 
                                     Grid.Column="0" HorizontalAlignment="Stretch"
                                     Command="{Binding InstallThisPack}"
                                     MinWidth="32"
                                     MinHeight="32"
-                                    Visibility="{Binding IsDownloading, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
+                                    Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph=""
                                                  Margin="5,0"
@@ -233,9 +237,7 @@
                                 </StackPanel>
                             </Button>
                             
-                            <!-- Separator -->
-                            <Rectangle Grid.Column="1" Margin="4,0" />
-                            
+                            <!-- Detail button -->
                             <Button ToolTipService.ToolTip="Detail"
                                     Grid.Column="2" HorizontalAlignment="Stretch"
                                     MinWidth="32"
@@ -250,10 +252,17 @@
                                 </StackPanel>
                             </Button>
                             
+                            <!-- Downloading state -->
                             <!-- Downloading status display -->
                             <ProgressBar Minimum="0" Maximum="100" Value="{Binding TotalDownloadProgress, Mode=OneWay}"
                                          VerticalAlignment="Center" Height="18" Margin="5"
-                                         Visibility="{Binding IsDownloading, Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
+                                         Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='Downloading'}"/>
+                            
+                            <!-- Installing state -->
+                            <TextBlock Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='Installing'}">
+                                <Run Text="{Binding LatestInstalledFile, Mode=OneWay}"/>
+                                (<Run Text="{Binding CurrentInstallProgress, Mode=OneWay}"/>/<Run Text="{Binding TotalInstallProgress, Mode=OneWay}"/>)
+                            </TextBlock>
                         </Grid>
                     </Grid>
                 </DataTemplate>

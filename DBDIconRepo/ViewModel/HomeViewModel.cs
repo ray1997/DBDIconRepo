@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
+using DBDIconRepo.Service;
 using IconPack.Model;
 using Octokit;
 using System;
@@ -19,6 +20,8 @@ namespace DBDIconRepo.ViewModel
 {
     public class HomeViewModel : ObservableObject
     {
+        OctokitService gitService => OctokitService.Instance;
+        GitHubClient client => gitService.GitHubClientInstance;
         public void InitializeViewModel()
         {
             //Initialize commands
@@ -31,10 +34,6 @@ namespace DBDIconRepo.ViewModel
             //Register messages
             Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
                 MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
-            Messenger.Default.Register<HomeViewModel, RequestDownloadRepo, string>(this,
-                MessageToken.REQUESTDOWNLOADREPOTOKEN, HandleRequestedDownloadRepo);
-
-            InitializeGit();
 
             if (AllAvailablePack is null)
                 AllAvailablePack = new ObservableCollection<PackDisplay>();
@@ -50,12 +49,6 @@ namespace DBDIconRepo.ViewModel
             {
                 Setting.EnableMessageGateOnSettingChanged();
             });
-        }
-
-        private async void HandleRequestedDownloadRepo(HomeViewModel recipient, RequestDownloadRepo message)
-        {
-            var repo = await client.Repository.Get(message.Info.Repository.ID);
-            CacheOrGit.DownloadPack(client, repo, message.Info).Await();
         }
 
         private void HandleRequestedSearchQuery(HomeViewModel recipient, RequestSearchQueryMessage message)
@@ -199,27 +192,7 @@ namespace DBDIconRepo.ViewModel
         public Setting? Config => Setting.Instance;
 
         #region GIT
-        private GitHubClient? client;
-        private string token = "";
-
-        public void InitializeGit()
-        {
-            client = new GitHubClient(new ProductHeaderValue("ballz"));
-            if (string.IsNullOrEmpty(token))
-            {
-                string tokenFile = $"{Environment.CurrentDirectory}\\token.txt";
-                if (File.Exists(tokenFile))
-                {
-                    token = File.ReadAllText(tokenFile);
-                }
-            }
-            if (!string.IsNullOrEmpty(token))
-            {
-                var tokenAuth = new Credentials(token);
-                client.Credentials = tokenAuth;
-            }
-        }
-
+        
         private const string PackTag = "dbd-icon-pack";
         public async Task FindPack()
         {
@@ -228,13 +201,13 @@ namespace DBDIconRepo.ViewModel
             var result = await client.Search.SearchRepo(request);
             foreach (var repo in result.Items)
             {
-                var packInfo = await CacheOrGit.GetPack(client, repo);
+                var packInfo = await CacheOrGit.GetPack(repo);
                 PackDisplay? gatheredPack = new(packInfo);
                 
                 if (gatheredPack is null)
                     continue;
                 //Preview icons
-                await CacheOrGit.GatherPackDisplayData(client, repo, gatheredPack.Info, Config.PerkPreviewSelection.ToArray());
+                await CacheOrGit.GatherPackDisplayData(repo, gatheredPack.Info, Config.PerkPreviewSelection.ToArray());
                 gatheredPack.HandleURLs();
                 AllAvailablePack.Add(gatheredPack);
             }
@@ -379,7 +352,7 @@ namespace DBDIconRepo.ViewModel
         {
             if (string.IsNullOrEmpty(Config.DBDInstallationPath))
                 return;
-            IconUninstaller.Uninstall(Config.DBDInstallationPath);
+            IconManager.Uninstall(Config.DBDInstallationPath);
         }
 
         #endregion

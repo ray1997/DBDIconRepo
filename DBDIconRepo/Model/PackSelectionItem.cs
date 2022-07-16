@@ -10,8 +10,8 @@ namespace DBDIconRepo.Model
 {
     public interface IPackSelectionItem
     {
-        string? Path { get; set; }
         string? FullPath { get; set; }
+        string? FilePath { get; }
         string? Name { get; set; }
         bool? IsSelected { get; set; }
         IBaseItemInfo? Info { get; set; }
@@ -28,6 +28,8 @@ namespace DBDIconRepo.Model
             get => _fullPath;
             set => SetProperty(ref _fullPath, value);
         }
+
+        public string FilePath => FullPath.Replace('/', '\\');
 
         string? _name;
         /// <summary>
@@ -52,7 +54,6 @@ namespace DBDIconRepo.Model
             get => _info;
             set => SetProperty(ref _info, value);
         }
-
         public PackSelectionFile()
         {
             IsSelected = true;
