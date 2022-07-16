@@ -16,10 +16,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPack", "PackCore\IconPa
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "DBDIconRepoWinApp (Package)", "DBDIconRepoWinApp\DBDIconRepoWinApp (Package)\DBDIconRepoWinApp (Package).wapproj", "{314D7FFD-81ED-4128-82E9-93106F661DFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBDIconRepoWinApp", "DBDIconRepoWinApp\DBDIconRepoWinApp\DBDIconRepoWinApp.csproj", "{271BB7A6-DA88-45AB-A8E5-407DB0E7A3A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBDIconRepoWinApp", "DBDIconRepoWinApp\DBDIconRepoWinApp\DBDIconRepoWinApp.csproj", "{271BB7A6-DA88-45AB-A8E5-407DB0E7A3A1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A17F066E-8EBE-46CA-8F81-5356035D6FEE} = {A17F066E-8EBE-46CA-8F81-5356035D6FEE}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconPackWinApp", "IconPackWinApp\IconPackWinApp.csproj", "{8331F77B-3384-43B4-BE35-2D4B78A4170C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -137,6 +139,22 @@ Global
 		{271BB7A6-DA88-45AB-A8E5-407DB0E7A3A1}.Release|x64.Build.0 = Release|x64
 		{271BB7A6-DA88-45AB-A8E5-407DB0E7A3A1}.Release|x86.ActiveCfg = Release|x86
 		{271BB7A6-DA88-45AB-A8E5-407DB0E7A3A1}.Release|x86.Build.0 = Release|x86
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Debug|arm64.Build.0 = Debug|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Debug|x64.Build.0 = Debug|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Debug|x86.Build.0 = Debug|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Release|arm64.ActiveCfg = Release|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Release|arm64.Build.0 = Release|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Release|x64.ActiveCfg = Release|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Release|x64.Build.0 = Release|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Release|x86.ActiveCfg = Release|Any CPU
+		{8331F77B-3384-43B4-BE35-2D4B78A4170C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
