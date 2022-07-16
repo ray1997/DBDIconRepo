@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBDIconRepo", "DBDIconRepo\DBDIconRepo.csproj", "{8EE06529-8A0D-45F5-AB99-83764AE89B38}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A17F066E-8EBE-46CA-8F81-5356035D6FEE} = {A17F066E-8EBE-46CA-8F81-5356035D6FEE}
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SortAllIconsIntoFolder", "SortAllIconsIntoFolder\SortAllIconsIntoFolder.csproj", "{EC62DF2C-7276-4113-A9F6-B697D8300257}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratePackJson", "GeneratePackJson\GeneratePackJson.csproj", "{5B84AD4A-A431-4524-924F-952CB3AB39CA}"
@@ -21,7 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBDIconRepoWinApp", "DBDIco
 		{A17F066E-8EBE-46CA-8F81-5356035D6FEE} = {A17F066E-8EBE-46CA-8F81-5356035D6FEE}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconPackWinApp", "IconPackWinApp\IconPackWinApp.csproj", "{8331F77B-3384-43B4-BE35-2D4B78A4170C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPackWinApp", "IconPackWinApp\IconPackWinApp.csproj", "{8331F77B-3384-43B4-BE35-2D4B78A4170C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A1157A64-1790-455C-97B6-F375423E80BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,22 +32,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Debug|arm64.Build.0 = Debug|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Debug|x64.Build.0 = Debug|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Debug|x86.Build.0 = Debug|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Release|arm64.ActiveCfg = Release|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Release|arm64.Build.0 = Release|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Release|x64.ActiveCfg = Release|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Release|x64.Build.0 = Release|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Release|x86.ActiveCfg = Release|Any CPU
-		{8EE06529-8A0D-45F5-AB99-83764AE89B38}.Release|x86.Build.0 = Release|Any CPU
 		{EC62DF2C-7276-4113-A9F6-B697D8300257}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC62DF2C-7276-4113-A9F6-B697D8300257}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC62DF2C-7276-4113-A9F6-B697D8300257}.Debug|arm64.ActiveCfg = Debug|Any CPU
@@ -158,6 +139,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EC62DF2C-7276-4113-A9F6-B697D8300257} = {A1157A64-1790-455C-97B6-F375423E80BF}
+		{5B84AD4A-A431-4524-924F-952CB3AB39CA} = {A1157A64-1790-455C-97B6-F375423E80BF}
+		{A17F066E-8EBE-46CA-8F81-5356035D6FEE} = {A1157A64-1790-455C-97B6-F375423E80BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}

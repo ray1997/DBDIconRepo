@@ -72,10 +72,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dialog\" />
+    <ProjectReference Include="..\..\IconPackWinApp\IconPackWinApp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\IconPackWinApp\IconPackWinApp.csproj" />
+    <Folder Include="Dialog\" />
   </ItemGroup>
 </Project>
