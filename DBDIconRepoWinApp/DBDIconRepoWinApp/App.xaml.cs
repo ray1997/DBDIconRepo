@@ -37,5 +37,9 @@ namespace DBDIconRepoWinApp
         }
 
         private Window m_window;
+#if DEBUG
+        public const string title = "Dead by Daylight: Icon Repository";
+        public Window MainWindow => m_window;
+#endif
     }
 }

@@ -29,5 +29,13 @@ namespace DBDIconRepoWinApp
             this.InitializeComponent();
             //CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
         }
+
+        private void DEBUGSIZEDISPLAY(object sender, SizeChangedEventArgs e)
+        {
+#if DEBUG
+            var main = (App.Current as App).MainWindow;
+            main.Title = $"{App.title} | W:{e.NewSize.Width} H:{e.NewSize.Height}";
+#endif
+        }
     }
 }

@@ -6,9 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    SizeChanged="DEBUGSIZEDISPLAY"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
-        <Style TargetType="Button">
+        <Style TargetType="Button" x:Key="searchOptionButtonStyle">
             <Setter Property="Margin" Value="4,0,0,0"/>
             <Setter Property="Background" Value="Transparent"/>
         </Style>
@@ -19,19 +20,25 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <!-- Title command style -->
         <Rectangle HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
                    Fill="{ThemeResource SystemBaseLowColor}"/>
+        
+        <!-- Search & options -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
                     Margin="4">
             <AutoSuggestBox HorizontalAlignment="Center" 
                             VerticalAlignment="Center"
                             PlaceholderText="Enter keyword to search..."
                             Width="350"/>
-            <Button ToolTipService.ToolTip="Refresh">
+            <!-- TODO: If it's smaller merge these button into one -->
+            <Button ToolTipService.ToolTip="Refresh" 
+                    Style="{StaticResource searchOptionButtonStyle}">
                 <SymbolIcon Symbol="Refresh"/>
             </Button>
-            <Button ToolTipService.ToolTip="Icon pack sorting">
+            <Button ToolTipService.ToolTip="Icon pack sorting"
+                    Style="{StaticResource searchOptionButtonStyle}">
                 <SymbolIcon Symbol="Sort"/>
                 <Button.Flyout>
                     <MenuFlyout Placement="Bottom">
@@ -55,7 +62,8 @@
                     </MenuFlyout>
                 </Button.Flyout>
             </Button>
-            <Button ToolTipService.ToolTip="Icon pack filter">
+            <Button ToolTipService.ToolTip="Icon pack filter"
+                    Style="{StaticResource searchOptionButtonStyle}">
                 <SymbolIcon Symbol="Filter"/>
                 <Button.Flyout>
                     <MenuFlyout Placement="Bottom">
@@ -75,7 +83,8 @@
             </Button>
         </StackPanel>
         <Button HorizontalAlignment="Right"
-                Margin="4">
+                Margin="4"
+                Style="{StaticResource searchOptionButtonStyle}">
             <StackPanel Orientation="Horizontal">
                 <PersonPicture BadgeText="Anonymous" 
                                Width="24" Height="24" 
@@ -117,5 +126,49 @@
                 </Flyout>
             </Button.Flyout>
         </Button>
+        
+        <!-- Settings overlay -->
+        <Grid Grid.RowSpan="2" HorizontalAlignment="Stretch" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+              VerticalAlignment="Stretch" x:Name="SettingOverlay"
+              x:Load="False">            
+            <Rectangle Fill="{ThemeResource SystemBaseLowColor}"/>
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Left"
+                        Margin="12,0"
+                        VerticalAlignment="Stretch">
+
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="Settings" Margin="0,5"/>
+                
+                <TextBlock Text="Application theme" Margin="0,5"/>
+                <RadioButton GroupName="ThemeSet" Content="Light"/>
+                <RadioButton GroupName="ThemeSet" Content="Dark"/>
+                <RadioButton GroupName="ThemeSet" Content="Default"/>
+
+                <AutoSuggestBox PlaceholderText="C:\SteamLibrary\common\Dead by Daylight\"
+                                Text="{Binding Config.DBDInstallationPath, Mode=TwoWay}"
+                                Header="Dead by Daylight installation path" Margin="0,2"
+                                Width="400"/>
+
+                <StackPanel Orientation="Horizontal" Margin="0,4">
+                    <Button Content="Browse..." Command="{Binding BrowseForSteamInstallationPath}"/>
+                    <SplitButton Content="Detect" Margin="2,0">
+                        <SplitButton.Flyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Steam" Command="{Binding FindDBDSteam}"/>
+                                <MenuFlyoutItem Text="Xbox game pass PC"/>
+                                <MenuFlyoutItem Text="Epic Games"/>
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
+                    </SplitButton>
+                </StackPanel>
+
+                <ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"/>
+
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <Button Content="Reset settings" Command="{Binding ResetSettings}"/>
+                    <Button Content="Uninstall icon pack" Margin="5,0" Command="{Binding UninstallIconPack}"/>
+                </StackPanel>
+            </StackPanel>            
+        </Grid>
     </Grid>
 </Page>
