@@ -47,6 +47,7 @@
   <ItemGroup>
     <None Remove="Dialog\PackDetail.xaml" />
     <None Remove="Dialog\PackInstall.xaml" />
+    <None Remove="Home.xaml" />
     <None Remove="Images\profile-placeholder.png" />
   </ItemGroup>
 
@@ -77,5 +78,11 @@
 
   <ItemGroup>
     <Folder Include="Dialog\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Home.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
